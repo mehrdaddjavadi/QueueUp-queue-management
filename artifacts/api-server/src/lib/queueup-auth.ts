@@ -15,6 +15,10 @@ function sessionSecret(): string {
   return secret;
 }
 
+export function assertOwnerSessionConfiguration(): void {
+  sessionSecret();
+}
+
 function signature(payload: string): string {
   return createHmac("sha256", sessionSecret())
     .update(payload)

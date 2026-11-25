@@ -1,0 +1,1 @@
+- [OpenAPI parameter collisions](openapi-parameter-collisions.md) — Orval can collide query-parameter types with generated path-parameter schemas; use headers for ticket access tokens.

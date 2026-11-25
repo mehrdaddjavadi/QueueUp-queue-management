@@ -129,6 +129,9 @@ function Landing() {
     <header className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-5 sm:px-8">
       <Brand />
       <nav className="flex items-center gap-2">
+        <a href="#how-it-works" className="hidden rounded-lg px-3 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white lg:block" data-testid="link-how-it-works">How it works</a>
+        <a href="#features" className="hidden rounded-lg px-3 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white lg:block" data-testid="link-features">Features</a>
+        <Link href="/manage" className="hidden rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white sm:block" data-testid="link-manage-queue">Manage queue</Link>
         <Link href="/create" className="hidden rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white sm:block" data-testid="link-create-queue">For businesses</Link>
         <Link href="/create" className="btn btn-primary !min-h-[40px] !px-4" data-testid="link-get-started">Create a queue <ArrowRight size={15} /></Link>
       </nav>
@@ -160,8 +163,8 @@ function Landing() {
             <div className="absolute -bottom-8 -left-9 size-32 rounded-full bg-[#dfeefa] blur-3xl" />
             <div className="surface relative rotate-[1.5deg] overflow-hidden p-5 sm:p-6">
               <div className="flex items-center justify-between border-b border-[#edf0f5] pb-4">
-                <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#eef0ff] text-[#4c5dd4]"><Scissors size={17} /></span><div><p className="text-sm font-bold text-[#29334a]">Northside Studio</p><p className="text-[11px] text-[#8992a3]">Live queue</p></div></div>
-                <span className="status-pill status-serving"><span className="dot" />Open</span>
+                <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#eef0ff] text-[#4c5dd4]"><Scissors size={17} /></span><div><p className="text-sm font-bold text-[#29334a]">Queue preview</p><p className="text-[11px] text-[#8992a3]">Illustrative example</p></div></div>
+                <span className="status-pill status-serving"><span className="dot" />SAMPLE</span>
               </div>
               <div className="grid grid-cols-2 gap-3 py-5">
                 <div className="rounded-xl bg-[#f5f6fa] p-4"><p className="eyebrow">Now serving</p><p className="mono mt-2 text-[35px] font-medium tracking-[-.07em] text-[#26324b]">A–08</p></div>
@@ -182,7 +185,7 @@ function Landing() {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8 sm:py-20">
+      <section id="features" className="mx-auto max-w-[1180px] scroll-mt-8 px-5 py-14 sm:px-8 sm:py-20">
         <div className="grid gap-10 border-y border-[#e0e5ed] py-9 md:grid-cols-[.7fr_1.3fr]">
           <div><p className="eyebrow">Made for the everyday rush</p><h2 className="mt-3 max-w-sm font-['Manrope'] text-3xl font-bold tracking-[-.06em] text-[#252f46]">The line moves.<br />Your day stays yours.</h2></div>
           <div className="grid gap-8 sm:grid-cols-3">
@@ -190,6 +193,34 @@ function Landing() {
             <Feature icon={<BellRing size={18} />} title="Know when it's close" text="A live ticket page shows their place and a practical wait estimate." />
             <Feature icon={<Monitor size={18} />} title="One clear display" text="Put the current number on a screen. Names stay private, always." />
           </div>
+        </div>
+      </section>
+      <section id="how-it-works" className="mx-auto max-w-[1180px] scroll-mt-8 px-5 pb-16 sm:px-8 sm:pb-20">
+        <div className="mb-7 max-w-xl"><p className="eyebrow">HOW IT WORKS</p><h2 className="mt-3 font-['Manrope'] text-3xl font-bold tracking-[-.06em] text-[#252f46]">Four steps. A much shorter wait.</h2><p className="mt-3 text-sm leading-6 text-[#737e91]">Set up your service once, then let every customer follow the same clear process.</p></div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StepCard number="01" title="Create your queue" text="Choose your business type, service pace, capacity, and owner access code." />
+          <StepCard number="02" title="Share your link" text="Put the booking link on your site, social page, or at the front desk." />
+          <StepCard number="03" title="Customers join" text="Customers enter a name and receive a private ticket from any browser." />
+          <StepCard number="04" title="Serve and update" text="Call the next ticket, manage service, and keep your display current." />
+        </div>
+      </section>
+      <section className="mx-auto max-w-[1180px] px-5 pb-16 sm:px-8 sm:pb-20">
+        <div className="surface grid gap-8 p-6 sm:p-8 md:grid-cols-[.7fr_1.3fr]">
+          <div><p className="eyebrow">MADE FOR SERVICE BUSINESSES</p><h2 className="mt-3 font-['Manrope'] text-2xl font-bold tracking-[-.055em] text-[#252f46]">A calmer way to welcome people.</h2></div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {['Barbershops', 'Medical clinics', 'Beauty salons', 'Restaurants', 'Car washes', 'Repair shops'].map((businessType) => <div key={businessType} className="rounded-xl bg-[#f5f6fa] px-3 py-3 text-xs font-semibold text-[#4b5870]">{businessType}</div>)}
+          </div>
+        </div>
+      </section>
+      <section className="mx-auto max-w-[1180px] scroll-mt-8 px-5 pb-16 sm:px-8 sm:pb-20">
+        <div className="mb-7 max-w-xl"><p className="eyebrow">QUEUEUP FEATURES</p><h2 className="mt-3 font-['Manrope'] text-3xl font-bold tracking-[-.06em] text-[#252f46]">The useful details, handled.</h2></div>
+        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          <Feature icon={<Ticket size={18} />} title="Online ticket generation" text="Give each customer a numbered place without an account or app." />
+          <Feature icon={<RefreshCw size={18} />} title="Live queue tracking" text="Ticket positions and current service status refresh automatically." />
+          <Feature icon={<Activity size={18} />} title="Smart wait estimates" text="Use service duration and current progress to estimate the wait." />
+          <Feature icon={<Users size={18} />} title="Business dashboard" text="Call, serve, complete, skip, and recall tickets in one place." />
+          <Feature icon={<Pause size={18} />} title="Flexible queue controls" text="Pause new bookings while continuing to serve existing customers." />
+          <Feature icon={<Monitor size={18} />} title="Public display screen" text="Show current and upcoming ticket numbers without customer names." />
         </div>
       </section>
       <section className="mx-auto max-w-[1180px] px-5 pb-20 sm:px-8">
@@ -210,19 +241,27 @@ function Feature({ icon, title, text }: { icon: ReactNode; title: string; text: 
   return <div><span className="grid size-9 place-items-center rounded-xl bg-[#edf0ff] text-[#5364d3]">{icon}</span><h3 className="mt-4 text-sm font-bold text-[#2d374d]">{title}</h3><p className="mt-2 text-[12px] leading-5 text-[#737e91]">{text}</p></div>;
 }
 
+function StepCard({ number, title, text }: { number: string; title: string; text: string }) {
+  return <div className="surface p-5"><span className="mono text-[11px] text-[#5869d7]">{number}</span><h3 className="mt-4 text-sm font-bold text-[#303a50]">{title}</h3><p className="mt-2 text-xs leading-5 text-[#737e91]">{text}</p></div>;
+}
+
 function CreateBusiness() {
   const create = useCreateBusiness();
   const [, setLocation] = useLocation();
-  const [form, setForm] = useState({ name: '', category: BusinessCategory.Barbershop, averageServiceMinutes: '20', maxActiveCapacity: '35', accessCode: '' });
+  const [form, setForm] = useState({ name: '', category: BusinessCategory.Barbershop, averageServiceMinutes: '20', maxActiveCapacity: '35', accessCode: '', confirmAccessCode: '' });
   const [error, setError] = useState('');
   const update = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
   const submit = (event: FormEvent) => {
     event.preventDefault();
     setError('');
-    create.mutate({ data: { ...form, averageServiceMinutes: Number(form.averageServiceMinutes), maxActiveCapacity: Number(form.maxActiveCapacity) } }, {
+    if (form.accessCode !== form.confirmAccessCode) {
+      setError('The access codes do not match.');
+      return;
+    }
+    create.mutate({ data: { name: form.name, category: form.category, averageServiceMinutes: Number(form.averageServiceMinutes), maxActiveCapacity: Number(form.maxActiveCapacity), accessCode: form.accessCode } }, {
       onSuccess: (created) => {
         queryClient.invalidateQueries({ queryKey: getGetManagementDashboardQueryKey(created.business.slug) });
-        setLocation(`/manage/${created.business.slug}`);
+        setLocation(`/manage/${created.business.slug}?created=1`);
       },
       onError: (err) => setError(errorText(err)),
     });
@@ -254,6 +293,7 @@ function CreateBusiness() {
           </div>
           <div className="rounded-xl bg-[#f5f6fa] p-4">
             <Field label="Owner access code" hint="6–128 characters" type="password" minLength={6} maxLength={128} autoComplete="new-password" placeholder="Choose a private access code" value={form.accessCode} onChange={(e) => update('accessCode', e.target.value)} required data-testid="input-access-code" />
+            <div className="mt-4"><Field label="Confirm access code" type="password" minLength={6} maxLength={128} autoComplete="new-password" placeholder="Enter the same code again" value={form.confirmAccessCode} onChange={(e) => update('confirmAccessCode', e.target.value)} required data-testid="input-confirm-access-code" /></div>
             <p className="mt-2 text-[10px] leading-4 text-[#828b9b]">You'll use this to sign in to your owner dashboard. Keep it somewhere safe.</p>
           </div>
           {error && <InlineError message={error} />}
@@ -269,9 +309,36 @@ function Step({ number, title, text }: { number: string; title: string; text: st
   return <div className="flex gap-3"><span className="mono pt-0.5 text-[11px] text-[#6474da]">{number}</span><div><p className="text-xs font-bold text-[#354058]">{title}</p><p className="mt-1 text-[11px] leading-5 text-[#7c8698]">{text}</p></div></div>;
 }
 
+function ManageEntry() {
+  const [, setLocation] = useLocation();
+  const [businessPath, setBusinessPath] = useState('');
+  const [error, setError] = useState('');
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const trimmed = businessPath.trim().replace(/\/+$/, '');
+    const slug = trimmed.split('/').filter(Boolean).at(-1);
+    if (!slug || slug === 'manage') {
+      setError('Enter the business slug or its owner dashboard link.');
+      return;
+    }
+    setLocation(`/manage/${encodeURIComponent(slug)}`);
+  };
+  return <div className="app-shell">
+    <header className="mx-auto flex max-w-[1040px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#6d788c]" data-testid="link-manage-entry-home">QueueUp home</Link></header>
+    <main className="mx-auto grid max-w-[1040px] gap-10 px-5 pb-12 pt-8 sm:px-8 md:grid-cols-[.9fr_1.1fr] md:pt-14">
+      <div><p className="eyebrow">OWNER ACCESS</p><h1 className="mt-4 font-['Manrope'] text-[42px] font-extrabold leading-tight tracking-[-.07em] text-[#202a40]">Pick up where your queue is.</h1><p className="mt-4 max-w-sm text-sm leading-6 text-[#737e91]">Enter the business slug or the owner dashboard link you saved when setting up.</p></div>
+      <form onSubmit={submit} className="surface mx-auto w-full max-w-[480px] p-6 sm:p-8">
+        <Field label="Business slug or dashboard link" placeholder="e.g. northside-studio-a1b2c3d4e5" value={businessPath} onChange={(event) => setBusinessPath(event.target.value)} required data-testid="input-business-slug" />
+        {error && <div className="mt-4"><InlineError message={error} /></div>}
+        <Button type="submit" className="mt-5 w-full !min-h-[47px]" testId="button-open-owner-dashboard">Continue <ArrowRight size={15} /></Button>
+      </form>
+    </main>
+  </div>;
+}
+
 function BookingPage() {
   const { slug = '' } = useParams<{ slug: string }>();
-  const query = useGetPublicBusiness(slug, { query: { queryKey: getGetPublicBusinessQueryKey(slug), refetchInterval: 8000 } });
+  const query = useGetPublicBusiness(slug, { query: { queryKey: getGetPublicBusinessQueryKey(slug), refetchInterval: 3000 } });
   const join = useJoinQueue();
   const queryClient = useQueryClient();
   const savedTicket = useMemo(() => {
@@ -350,9 +417,16 @@ function CustomerTicketView({ ticket, slug, onForget }: { ticket: CustomerTicket
       <div className="surface mt-8 overflow-hidden">
         <div className="grid gap-px bg-[#edf0f4] sm:grid-cols-[1.1fr_.9fr]">
           <div className="bg-white p-6 sm:p-8"><p className="eyebrow">YOUR TICKET</p><p className="mono mt-3 text-[clamp(52px,12vw,88px)] font-medium leading-none tracking-[-.09em] text-[#4c5dd4]" data-testid="text-ticket-number">{ticket.ticketNumber}</p><p className="mt-5 max-w-sm text-xs leading-5 text-[#748095]" data-testid="text-ticket-message">{statusDescription[current] || statusDescription.Waiting}</p></div>
-          <div className="grid grid-cols-2 bg-white sm:grid-cols-1">
-            <div className="border-b border-[#edf0f4] p-5 sm:p-6"><p className="eyebrow">Ahead of you</p><p className="mono mt-2 text-[32px] text-[#29344d]" data-testid="text-customers-ahead">{ticket.customersAhead}</p><p className="text-[10px] text-[#8b94a4]">customers</p></div>
-            <div className="p-5 sm:p-6"><p className="eyebrow">Estimated wait</p><p className="mono mt-2 text-[32px] text-[#29344d]" data-testid="text-estimated-wait">{ticket.estimatedWaitMinutes}<span className="ml-1 text-xs text-[#8b94a4]">min</span></p><p className="text-[10px] text-[#8b94a4]">estimate, may change</p></div>
+          <div className="bg-white p-5 sm:p-6">
+            {current === 'Completed' || current === 'Skipped' ? <div className={`flex h-full min-h-[150px] flex-col justify-center rounded-xl p-5 ${current === 'Completed' ? 'bg-[#edf7f1] text-[#357b5b]' : 'bg-[#fff3ef] text-[#a45045]'}`}>
+              <span className="flex items-center gap-2 text-xs font-bold">{current === 'Completed' ? <CheckCircle2 size={17} /> : <X size={17} />}{current === 'Completed' ? 'Visit complete' : 'Ticket skipped'}</span>
+              <p className="mt-2 text-[11px] leading-5 text-[#697487]">{statusDescription[current]}</p>
+            </div> : <div className="grid h-full grid-cols-2 gap-3">
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Ahead of you</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-customers-ahead">{ticket.customersAhead}</p><p className="text-[10px] text-[#8b94a4]">customers</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Active queue</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-active-queue-size">{ticket.activeQueueSize}</p><p className="text-[10px] text-[#8b94a4]">tickets</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Now serving</p><p className="mono mt-2 text-[25px] text-[#29344d]" data-testid="text-now-serving">{ticket.currentTicketNumber || '—'}</p><p className="text-[10px] text-[#8b94a4]">current ticket</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Estimated wait</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-estimated-wait">{ticket.estimatedWaitMinutes}<span className="ml-1 text-xs text-[#8b94a4]">min</span></p><p className="text-[10px] text-[#8b94a4]">estimate, may change</p></div>
+            </div>}
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#edf0f4] bg-[#fafbfc] px-5 py-4 sm:px-7">
@@ -384,9 +458,13 @@ function ManagePage() {
   const query = useGetManagementDashboard(slug, { query: { queryKey: getGetManagementDashboardQueryKey(slug), refetchInterval: 3000 } });
   const queryClient = useQueryClient();
   const [showSettings, setShowSettings] = useState(false);
+  const [showCreated, setShowCreated] = useState(
+    () => new URLSearchParams(window.location.search).get('created') === '1',
+  );
   const [loginCode, setLoginCode] = useState('');
   const [loginError, setLoginError] = useState('');
   const [actionError, setActionError] = useState('');
+  const [actionSuccess, setActionSuccess] = useState('');
   const login = useLoginBusiness();
   const logout = useLogoutBusiness();
   const callNext = useCallNextCustomer();
@@ -402,9 +480,10 @@ function ManagePage() {
     queryClient.invalidateQueries({ queryKey: getGetPublicBusinessQueryKey(slug) }),
     queryClient.invalidateQueries({ queryKey: getGetQueueDisplayQueryKey(slug) }),
   ]);
-  const runAction = async (action: () => Promise<unknown>) => {
+  const runAction = async (action: () => Promise<unknown>, successMessage = 'Queue updated.') => {
     setActionError('');
-    try { await action(); await refresh(); } catch (error) { setActionError(errorText(error)); }
+    setActionSuccess('');
+    try { await action(); await refresh(); setActionSuccess(successMessage); } catch (error) { setActionError(errorText(error)); }
   };
   const signIn = (event: FormEvent) => {
     event.preventDefault();
@@ -441,11 +520,14 @@ function ManagePage() {
   const hasCurrent = Boolean(currentTicket);
   const allBusy = isLoading || logout.isPending;
   const handleLogout = () => logout.mutate({ slug }, { onSuccess: async () => { queryClient.removeQueries({ queryKey: getGetManagementDashboardQueryKey(slug) }); query.refetch(); } });
-  const ticketAction = (kind: 'start' | 'complete' | 'skip', ticketId: string) => runAction(() => {
-    if (kind === 'start') return start.mutateAsync({ slug, ticketId });
-    if (kind === 'complete') return complete.mutateAsync({ slug, ticketId });
-    return skip.mutateAsync({ slug, ticketId });
-  });
+  const ticketAction = (kind: 'start' | 'complete' | 'skip', ticketId: string) => {
+    if (kind === 'skip' && !window.confirm('Skip this ticket? The customer will leave the active queue.')) return;
+    return runAction(() => {
+      if (kind === 'start') return start.mutateAsync({ slug, ticketId });
+      if (kind === 'complete') return complete.mutateAsync({ slug, ticketId });
+      return skip.mutateAsync({ slug, ticketId });
+    }, kind === 'start' ? 'Service started.' : kind === 'complete' ? 'Service completed.' : 'Ticket skipped.');
+  };
   return <div className="app-shell">
     <header className="border-b border-[#dfe4ec] bg-white/80">
       <div className="mx-auto flex max-w-[1360px] items-center justify-between gap-3 px-4 py-4 sm:px-7">
@@ -460,13 +542,25 @@ function ManagePage() {
     <main className="mx-auto max-w-[1360px] px-4 pb-12 pt-7 sm:px-7 sm:pt-9">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div><p className="eyebrow">OWNER DASHBOARD · LIVE</p><h1 className="mt-2 font-['Manrope'] text-[30px] font-extrabold tracking-[-.065em] text-[#222d44] sm:text-[36px]">Good day, let's keep it moving.</h1><p className="mt-1 text-xs text-[#838d9f]">Your queue refreshes automatically every few seconds.</p></div>
-        <div className="flex items-center gap-2"><span className={`status-pill ${dashboard.business.isPaused ? 'status-called' : 'status-serving'}`} data-testid="status-queue-state"><span className="dot" />{dashboard.business.isPaused ? 'Bookings paused' : 'Taking customers'}</span><Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => updateQueue.mutateAsync({ slug, data: { isPaused: !dashboard.business.isPaused } }))} testId="button-pause-resume">{dashboard.business.isPaused ? <><Play size={14} /> Resume queue</> : <><Pause size={14} /> Pause queue</>}</Button></div>
+        <div className="flex items-center gap-2"><span className={`status-pill ${dashboard.business.isPaused ? 'status-called' : 'status-serving'}`} data-testid="status-queue-state"><span className="dot" />{dashboard.business.isPaused ? 'Bookings paused' : 'Taking customers'}</span><Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => updateQueue.mutateAsync({ slug, data: { isPaused: !dashboard.business.isPaused } }), dashboard.business.isPaused ? 'Bookings have resumed.' : 'New bookings are paused.')} testId="button-pause-resume">{dashboard.business.isPaused ? <><Play size={14} /> Resume queue</> : <><Pause size={14} /> Pause queue</>}</Button></div>
       </div>
+      {showCreated && <section className="surface mb-6 p-5 sm:p-6" aria-live="polite" data-testid="status-business-created">
+        <div className="flex items-start justify-between gap-4">
+          <div><p className="eyebrow">YOUR QUEUE IS READY</p><h2 className="mt-2 text-lg font-bold tracking-[-.04em] text-[#29334a]">{dashboard.business.name}</h2><p className="mt-1 text-xs leading-5 text-[#788397]">Save these links to share the queue and return to your owner dashboard.</p></div>
+          <button onClick={() => { setShowCreated(false); window.history.replaceState({}, '', window.location.pathname); }} className="grid size-8 shrink-0 place-items-center rounded-lg text-[#7c8698] hover:bg-[#f2f4f8]" aria-label="Dismiss setup confirmation"><X size={16} /></button>
+        </div>
+        <div className="mt-4 grid gap-2 lg:grid-cols-3">
+          <CopyLinkRow title="Customer booking" href={`/q/${slug}`} detail="Public link for customers" />
+          <CopyLinkRow title="Owner dashboard" href={`/manage/${slug}`} detail="Private link for business management" />
+          <CopyLinkRow title="TV display" href={`/display/${slug}`} detail="Ticket numbers only" />
+        </div>
+      </section>}
       {actionError && <div className="mb-5"><InlineError message={actionError} onRetry={() => { setActionError(''); query.refetch(); }} /></div>}
+      {actionSuccess && <div className="mb-5 flex items-center gap-2 rounded-xl border border-[#cfe7d9] bg-[#f0f8f3] px-4 py-3 text-xs font-semibold text-[#357b5b]" role="status" data-testid="status-action-success"><CheckCircle2 size={15} />{actionSuccess}</div>}
       <div className="mb-7 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile label="Waiting" value={dashboard.stats.waitingCustomers} icon={<Users size={17} />} tint="indigo" detail="in the queue" />
         <StatTile label="Being served" value={dashboard.stats.currentlyServing} icon={<Activity size={17} />} tint="green" detail="right now" />
-        <StatTile label="Completed today" value={dashboard.stats.completedTickets} icon={<CheckCircle2 size={17} />} tint="slate" detail="tickets finished" />
+        <StatTile label="Completed tickets" value={dashboard.stats.completedTickets} icon={<CheckCircle2 size={17} />} tint="slate" detail="all time" />
         <StatTile label="Average wait" value={`${dashboard.stats.averageWaitingMinutes}m`} icon={<Clock3 size={17} />} tint="amber" detail="recent customers" />
       </div>
       <div className="grid items-start gap-5 lg:grid-cols-[1.48fr_.82fr]">
@@ -478,18 +572,18 @@ function ManagePage() {
           {hasCurrent && currentTicket ? <div className="border-b border-[#edf0f4] bg-[#f6f7ff] px-5 py-5 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4"><span className="grid size-14 place-items-center rounded-2xl bg-white font-['DM_Mono'] text-[17px] font-medium text-[#4c5dd4] shadow-sm">{currentTicket.ticketNumber}</span><div><p className="eyebrow !text-[#6673ba]">{activeStatus === 'Serving' ? 'NOW SERVING' : 'CALLED TO COUNTER'}</p><p className="mt-1 text-sm font-bold text-[#2c364f]">{currentTicket.customerName}</p></div></div>
-              <div className="flex flex-wrap gap-2">{activeStatus === 'Called' && <Button disabled={allBusy} onClick={() => ticketAction('start', currentTicket.id)} testId="button-start-service"><Play size={14} /> Start service</Button>}{activeStatus === 'Serving' && <Button disabled={allBusy} onClick={() => ticketAction('complete', currentTicket.id)} testId="button-complete-service"><Check size={14} /> Complete</Button>}<Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => recall.mutateAsync({ slug }))} testId="button-recall-customer"><BellRing size={14} /> Recall</Button><Button variant="danger" disabled={allBusy} onClick={() => ticketAction('skip', currentTicket.id)} testId="button-skip-current"><SkipForward size={14} /> Skip</Button></div>
+              <div className="flex flex-wrap gap-2">{activeStatus === 'Called' && <Button disabled={allBusy} onClick={() => ticketAction('start', currentTicket.id)} testId="button-start-service"><Play size={14} /> Start service</Button>}{activeStatus === 'Serving' && <Button disabled={allBusy} onClick={() => ticketAction('complete', currentTicket.id)} testId="button-complete-service"><Check size={14} /> Complete</Button>}<Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => recall.mutateAsync({ slug }), 'Current ticket recalled.')} testId="button-recall-customer"><BellRing size={14} /> Recall</Button><Button variant="danger" disabled={allBusy} onClick={() => ticketAction('skip', currentTicket.id)} testId="button-skip-current"><SkipForward size={14} /> Skip</Button></div>
             </div>
           </div> : <div className="flex items-center justify-between gap-4 border-b border-[#edf0f4] bg-[#f7f8fb] px-5 py-5 sm:px-6">
             <div><p className="eyebrow">READY WHEN YOU ARE</p><p className="mt-1 text-sm font-semibold text-[#313c54]">{nextUp ? `${nextUp.customerName} is next` : 'No one is waiting right now'}</p><p className="mt-1 text-[10px] text-[#828c9e]">{nextUp ? `Ticket ${nextUp.ticketNumber} · joined ${formatTime(nextUp.createdAt)}` : 'Your queue is clear.'}</p></div>
-            <Button disabled={!nextUp || allBusy} onClick={() => runAction(() => callNext.mutateAsync({ slug }))} className="shrink-0" testId="button-call-next"><ArrowRight size={15} /> Call next</Button>
+            <Button disabled={!nextUp || allBusy} onClick={() => runAction(() => callNext.mutateAsync({ slug }), 'Next customer called.')} className="shrink-0" testId="button-call-next"><ArrowRight size={15} /> Call next</Button>
           </div>}
           <div className="overflow-x-auto">
             <table className="w-full min-w-[590px] text-left">
               <thead><tr className="border-b border-[#edf0f4] text-[9px] font-semibold uppercase tracking-[.1em] text-[#8791a2]"><th className="px-5 py-3 sm:px-6">Ticket</th><th className="px-3 py-3">Customer</th><th className="px-3 py-3">Joined</th><th className="px-3 py-3">Status</th><th className="px-5 py-3 text-right sm:px-6">Action</th></tr></thead>
               <tbody>{dashboard.tickets.length === 0 ? <tr><td colSpan={5} className="px-6 py-14 text-center"><span className="mx-auto grid size-10 place-items-center rounded-xl bg-[#f0f2f7] text-[#7a85a0]"><Ticket size={18} /></span><p className="mt-3 text-xs font-semibold text-[#576278]">No tickets yet</p><p className="mt-1 text-[10px] text-[#929bab]">Share your booking link to welcome your first customer.</p></td></tr>
                 : dashboard.tickets.map((ticket) => <tr key={ticket.id} className="border-b border-[#f0f2f6] last:border-0 hover:bg-[#fafbfc]" data-testid={`row-ticket-${ticket.id}`}>
-                  <td className="px-5 py-3.5 sm:px-6"><span className="mono text-xs font-medium text-[#4453bd]">{ticket.ticketNumber}</span></td><td className="px-3 py-3.5"><span className="text-xs font-semibold text-[#38435a]">{ticket.customerName}</span></td><td className="px-3 py-3.5 text-[10px] text-[#828c9d]">{formatTime(ticket.createdAt)}</td><td className="px-3 py-3.5"><StatusBadge status={ticket.status} /></td><td className="px-5 py-3.5 text-right sm:px-6">{ticket.status === 'Waiting' ? <button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => runAction(() => callNext.mutateAsync({ slug }))} disabled={allBusy} data-testid={`button-call-ticket-${ticket.id}`}>Call next</button> : ticket.status === 'Called' ? <button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('start', ticket.id)} disabled={allBusy} data-testid={`button-start-ticket-${ticket.id}`}>Start</button> : ticket.status === 'Serving' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('complete', ticket.id)} disabled={allBusy} data-testid={`button-complete-ticket-${ticket.id}`}>Complete</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>Skip</button></div> : <span className="text-[10px] text-[#a0a7b4]">—</span>}</td>
+                  <td className="px-5 py-3.5 sm:px-6"><span className="mono text-xs font-medium text-[#4453bd]">{ticket.ticketNumber}</span></td><td className="px-3 py-3.5"><span className="text-xs font-semibold text-[#38435a]">{ticket.customerName}</span></td><td className="px-3 py-3.5 text-[10px] text-[#828c9d]">{formatTime(ticket.createdAt)}</td><td className="px-3 py-3.5"><StatusBadge status={ticket.status} /></td><td className="px-5 py-3.5 text-right sm:px-6">{ticket.status === 'Waiting' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline disabled:cursor-not-allowed disabled:opacity-50" onClick={() => runAction(() => callNext.mutateAsync({ slug }), 'Next customer called.')} disabled={allBusy || hasCurrent} data-testid={`button-call-ticket-${ticket.id}`}>Call next</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>Skip</button></div> : ticket.status === 'Called' ? <button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('start', ticket.id)} disabled={allBusy} data-testid={`button-start-ticket-${ticket.id}`}>Start</button> : ticket.status === 'Serving' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('complete', ticket.id)} disabled={allBusy} data-testid={`button-complete-ticket-${ticket.id}`}>Complete</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>Skip</button></div> : <span className="text-[10px] text-[#a0a7b4]">—</span>}</td>
                 </tr>)}</tbody>
             </table>
           </div>
@@ -500,12 +594,13 @@ function ManagePage() {
             <div className="flex items-start justify-between gap-3"><div><p className="eyebrow">QUICK LINKS</p><h2 className="mt-1 text-sm font-bold text-[#303a50]">Share the right screen</h2></div><Sparkles size={17} className="text-[#6474d8]" /></div>
             <div className="mt-4 space-y-2">
               <CopyLinkRow title="Customer booking" href={`/q/${slug}`} detail="Let customers reserve a spot" />
+              <CopyLinkRow title="Owner dashboard" href={`/manage/${slug}`} detail="Private business management link" />
               <CopyLinkRow title="Public TV display" href={`/display/${slug}`} detail="Shows ticket numbers, never names" />
             </div>
           </section>
           <section className="surface overflow-hidden">
             <button onClick={() => setShowSettings((value) => !value)} className="flex w-full items-center justify-between p-5 text-left sm:p-6" aria-expanded={showSettings} data-testid="button-toggle-settings"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-[#f0f2f7] text-[#5d6880]"><Settings2 size={17} /></span><div><p className="text-sm font-bold text-[#303a50]">Queue settings</p><p className="mt-1 text-[10px] text-[#8992a1]">Business details and service pace</p></div></div><ChevronRight size={17} className={`text-[#8b94a3] transition-transform ${showSettings ? 'rotate-90' : ''}`} /></button>
-            {showSettings && <SettingsForm dashboard={dashboard} pending={updateBusiness.isPending} onSave={(data) => runAction(() => updateBusiness.mutateAsync({ slug, data }))} />}
+            {showSettings && <SettingsForm dashboard={dashboard} pending={updateBusiness.isPending} onSave={(data) => runAction(() => updateBusiness.mutateAsync({ slug, data }), 'Business settings saved.')} />}
           </section>
           <div className="rounded-xl border border-[#e0e5ed] bg-[#f8f9fb] p-4">
             <p className="eyebrow">QUEUE STATUS</p><div className="mt-3 flex items-center justify-between"><span className="text-xs font-semibold text-[#536078]">Customer reservations</span><span className={`text-[10px] font-bold ${dashboard.business.isPaused ? 'text-[#9a6a20]' : 'text-[#378464]'}`}>{dashboard.business.isPaused ? 'Paused' : 'Open'}</span></div><p className="mt-2 text-[10px] leading-4 text-[#858fa0]">{dashboard.business.isPaused ? 'Existing tickets remain active. Resume whenever you are ready.' : `Up to ${dashboard.business.maxActiveCapacity} people can join the queue.`}</p>
@@ -533,7 +628,7 @@ function CopyLinkRow({ title, href, detail }: { title: string; href: string; det
     catch { window.open(fullUrl, '_blank', 'noopener,noreferrer'); }
   };
   return <div className="flex items-center justify-between gap-3 rounded-xl border border-[#e8ebf1] p-3">
-    <div className="min-w-0"><p className="text-[11px] font-semibold text-[#38435a]">{title}</p><p className="mt-0.5 truncate text-[9px] text-[#8a94a4]">{detail}</p></div>
+    <div className="min-w-0"><p className="text-[11px] font-semibold text-[#38435a]">{title}</p><p className="mt-0.5 truncate text-[9px] text-[#8a94a4]">{detail}</p><p className="mono mt-1 truncate text-[9px] text-[#5a6680]">{window.location.origin}{href}</p></div>
     <div className="flex shrink-0 items-center gap-1.5"><Link href={href} target="_blank" className="grid size-8 place-items-center rounded-lg text-[#758096] hover:bg-[#f2f4f8]" aria-label={`Open ${title}`} data-testid={`link-open-${title.toLowerCase().replaceAll(' ', '-')}`}><ExternalLink size={14} /></Link><button onClick={copy} className="btn btn-secondary !min-h-[32px] !px-2.5 !text-[10px]" data-testid={`button-copy-${title.toLowerCase().replaceAll(' ', '-')}`}>{copied ? <><Check size={12} /> Copied</> : 'Copy link'}</button></div>
   </div>;
 }
@@ -601,6 +696,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/create" component={CreateBusiness} />
       <Route path="/q/:slug" component={BookingPage} />
+      <Route path="/manage" component={ManageEntry} />
       <Route path="/manage/:slug" component={ManagePage} />
       <Route path="/display/:slug" component={DisplayPage} />
       <Route component={NotFound} />

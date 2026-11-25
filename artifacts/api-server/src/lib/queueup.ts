@@ -119,6 +119,9 @@ export async function createBusiness(input: {
   accessCode: string;
 }): Promise<Business> {
   const name = input.name.trim();
+  if (name.length < 2 || name.length > 100) {
+    throw new QueueUpError(400, "Business name must be between 2 and 100 characters");
+  }
   const adminAccessCodeHash = await hashAccessCode(input.accessCode);
   const slug = `${slugify(name)}-${randomBytes(5).toString("hex")}`;
   const [business] = await db
@@ -510,13 +513,20 @@ export async function updateBusinessSettings(
 ) {
   const business = await getBusinessBySlug(slug);
   if (!business) throw new QueueUpError(404, "Business not found");
+  const updates = { ...input };
+  if (updates.name !== undefined) {
+    updates.name = updates.name.trim();
+    if (updates.name.length < 2 || updates.name.length > 100) {
+      throw new QueueUpError(400, "Business name must be between 2 and 100 characters");
+    }
+  }
   await db.transaction(async (tx) => {
     await tx.execute(
       sql`SELECT id FROM queueup_businesses WHERE id = ${business.id} FOR UPDATE`,
     );
     await tx
       .update(businessesTable)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...updates, updatedAt: new Date() })
       .where(eq(businessesTable.id, business.id));
   });
   return getManagementDashboard(slug);

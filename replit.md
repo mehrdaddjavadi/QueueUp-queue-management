@@ -1,15 +1,16 @@
-# [Project name]
+# QueueUp
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+QueueUp lets service businesses replace physical waiting lines with public booking links, an owner queue dashboard, and a live ticket display.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/queueup run dev` — run the QueueUp web app
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string; `SESSION_SECRET` — signs owner sessions
 
 ## Stack
 
@@ -22,19 +23,28 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/queueup` — React web app and responsive QueueUp screens
+- `artifacts/api-server` — shared Express API and QueueUp routes
+- `lib/api-spec/openapi.yaml` — API source of truth; regenerate helpers with API codegen
+- `lib/db/src/schema/queueup.ts` — PostgreSQL business and ticket tables
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Customer booking is anonymous; a browser token prevents duplicate active tickets without collecting contact details.
+- Owner access codes are salted and hashed; dashboard sessions are signed HTTP-only cookies.
+- Queue numbers and owner queue changes use database transactions and a per-business row lock.
+- Queue updates use three-second polling instead of a paid realtime service.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Owners create a business queue, share booking and display links, manage tickets, pause bookings, and update settings.
+- Customers join without creating an account and can follow their private ticket status and estimated wait.
+- Public displays show the current and upcoming ticket numbers without customer names.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Keep the MVP suitable for the Replit Starter (Free) plan: no paid integrations or external APIs.
+- Keep the interface in English, with a restrained light SaaS presentation and indigo/blue accents.
 
 ## Gotchas
 

@@ -55,6 +55,7 @@ import {
   verifyAccessCode,
 } from "../lib/queueup";
 import {
+  assertOwnerSessionConfiguration,
   clearOwnerSession,
   hasOwnerSession,
   setOwnerSession,
@@ -108,6 +109,7 @@ router.post(
       res.status(400).json(validationError(parsed.error.message));
       return;
     }
+    assertOwnerSessionConfiguration();
     const business = await createBusiness(parsed.data);
     setOwnerSession(res, business.slug, business.id);
     const payload = {
@@ -231,6 +233,7 @@ router.post(
       res.status(404).json(validationError("Business not found"));
       return;
     }
+    assertOwnerSessionConfiguration();
     const key = `${params.data.slug}:${req.ip ?? "unknown"}`;
     const now = Date.now();
     const previous = loginAttempts.get(key);
