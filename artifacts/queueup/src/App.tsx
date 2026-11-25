@@ -35,6 +35,7 @@ import NotFound from '@/pages/not-found';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { formatNumber, LanguageProvider, useLanguage, useT } from '@/lib/i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: true } },
@@ -65,14 +66,26 @@ function errorText(error: unknown, fallback = 'Something went wrong. Please try 
   return fallback;
 }
 
-function Brand({ compact = false }: { compact?: boolean }) {
+function Brand({ compact = false, showLanguage = true }: { compact?: boolean; showLanguage?: boolean }) {
+  const { language, setLanguage } = useLanguage();
+  const t = useT();
   return (
-    <Link href="/" className="inline-flex items-center gap-2.5 text-inherit no-underline" data-testid="link-home-brand">
-      <span className="grid size-9 place-items-center rounded-xl bg-[#4c5dd4] text-white shadow-sm">
-        <Activity size={19} strokeWidth={2.4} />
-      </span>
-      {!compact && <span className="wordmark text-[19px] leading-none tracking-[-.07em]">queueup</span>}
-    </Link>
+    <div className="inline-flex items-center gap-3">
+      <Link href="/" className="inline-flex items-center gap-2.5 text-inherit no-underline" data-testid="link-home-brand">
+        <span className="grid size-9 place-items-center rounded-xl bg-[#4c5dd4] text-white shadow-sm">
+          <Activity size={19} strokeWidth={2.4} />
+        </span>
+        {!compact && <span className="wordmark text-[19px] leading-none tracking-[-.07em]">queueup</span>}
+      </Link>
+      {showLanguage && <button
+        type="button"
+        onClick={() => setLanguage(language === 'en' ? 'fa' : 'en')}
+        aria-label={t(language === 'en' ? 'Switch to Persian' : 'Switch to English')}
+        title={t(language === 'en' ? 'Switch to Persian' : 'Switch to English')}
+        data-testid="button-language-toggle"
+        className="rounded-lg border border-[#dce1eb] bg-white px-2.5 py-2 text-xs font-semibold text-[#4c5dd4] transition hover:bg-[#f4f5ff]"
+      >{language === 'en' ? 'فارسی' : 'English'}</button>}
+    </div>
   );
 }
 
@@ -88,52 +101,57 @@ function Button({
 function Field({
   label, hint, ...props
 }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
+  const t = useT();
   return <label className="block space-y-2">
     <span className="flex items-center justify-between text-[13px] font-semibold text-[#303a50]">
-      {label}{hint && <span className="text-[11px] font-normal text-[#7a8496]">{hint}</span>}
+      {t(label)}{hint && <span className="text-[11px] font-normal text-[#7a8496]">{t(hint)}</span>}
     </span>
-    <input {...props} className={`field ${props.className || ''}`} />
+    <input {...props} placeholder={props.placeholder ? t(props.placeholder) : undefined} className={`field ${props.className || ''}`} />
   </label>;
 }
 
 function SelectField({
   label, children, ...props
 }: SelectHTMLAttributes<HTMLSelectElement> & { label: string; children: ReactNode }) {
+  const t = useT();
   return <label className="block space-y-2">
-    <span className="block text-[13px] font-semibold text-[#303a50]">{label}</span>
+    <span className="block text-[13px] font-semibold text-[#303a50]">{t(label)}</span>
     <select {...props} className={`field ${props.className || ''}`}>{children}</select>
   </label>;
 }
 
 function InlineError({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const t = useT();
   return <div role="alert" className="flex items-start gap-3 rounded-xl border border-[#f0d1ce] bg-[#fff7f6] p-4 text-sm text-[#914b44]" data-testid="status-error">
     <X size={17} className="mt-0.5 shrink-0" />
-    <div className="flex-1"><p className="font-semibold">We couldn't complete that</p><p className="mt-1 leading-relaxed">{message}</p></div>
-    {onRetry && <button onClick={onRetry} className="font-semibold underline underline-offset-4" data-testid="button-retry">Retry</button>}
+    <div className="flex-1"><p className="font-semibold">{t("We couldn't complete that")}</p><p className="mt-1 leading-relaxed">{t(message)}</p></div>
+    {onRetry && <button onClick={onRetry} className="font-semibold underline underline-offset-4" data-testid="button-retry">{t('Retry')}</button>}
   </div>;
 }
 
 function PageLoader({ label = 'Loading your queue' }: { label?: string }) {
+  const t = useT();
   return <main className="app-shell grid place-items-center p-6" aria-label={label}>
     <div className="w-full max-w-sm space-y-4">
       <div className="h-3 w-28 animate-pulse rounded bg-[#e5e9f1]" />
       <div className="h-28 animate-pulse rounded-2xl bg-[#e5e9f1]" />
       <div className="h-14 animate-pulse rounded-xl bg-[#e5e9f1]" />
-      <p className="eyebrow text-center">{label}</p>
+      <p className="eyebrow text-center">{t(label)}</p>
     </div>
   </main>;
 }
 
 function Landing() {
+  const t = useT();
   return <div className="app-shell overflow-hidden">
     <header className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-5 sm:px-8">
       <Brand />
       <nav className="flex items-center gap-2">
-        <a href="#how-it-works" className="hidden rounded-lg px-3 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white lg:block" data-testid="link-how-it-works">How it works</a>
-        <a href="#features" className="hidden rounded-lg px-3 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white lg:block" data-testid="link-features">Features</a>
-        <Link href="/manage" className="hidden rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white sm:block" data-testid="link-manage-queue">Manage queue</Link>
-        <Link href="/create" className="hidden rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white sm:block" data-testid="link-create-queue">For businesses</Link>
-        <Link href="/create" className="btn btn-primary !min-h-[40px] !px-4" data-testid="link-get-started">Create a queue <ArrowRight size={15} /></Link>
+        <a href="#how-it-works" className="hidden rounded-lg px-3 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white lg:block" data-testid="link-how-it-works">{t('How it works')}</a>
+        <a href="#features" className="hidden rounded-lg px-3 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white lg:block" data-testid="link-features">{t('Features')}</a>
+        <Link href="/manage" className="hidden rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white sm:block" data-testid="link-manage-queue">{t('Manage queue')}</Link>
+        <Link href="/create" className="hidden rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#626d82] transition hover:bg-white sm:block" data-testid="link-create-queue">{t('For businesses')}</Link>
+        <Link href="/create" className="btn btn-primary !min-h-[40px] !px-4" data-testid="link-get-started">{t('Create a queue')} <ArrowRight size={15} /></Link>
       </nav>
     </header>
     <main>
@@ -141,21 +159,21 @@ function Landing() {
         <div className="grid items-center gap-12 lg:grid-cols-[1.04fr_.96fr]">
           <div className="fade-up relative z-10">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#dce1ef] bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-[#5a6680]">
-              <span className="size-1.5 rounded-full bg-[#4c5dd4]" /> A calmer way to run the line
+              <span className="size-1.5 rounded-full bg-[#4c5dd4]" /> {t('A calmer way to run the line')}
             </div>
             <h1 className="max-w-[650px] font-['Manrope'] text-[clamp(42px,7vw,76px)] font-extrabold leading-[1.04] tracking-[-.075em] text-[#202a40]">
-              Good service.<br /><span className="text-[#4c5dd4]">No waiting room.</span>
+              {t('Good service.')}<br /><span className="text-[#4c5dd4]">{t('No waiting room.')}</span>
             </h1>
             <p className="mt-6 max-w-[460px] text-[16px] leading-7 text-[#667187]">
-              Let customers take a number from anywhere. Keep your team focused on the person in front of you.
+              {t('Let customers take a number from anywhere. Keep your team focused on the person in front of you.')}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/create" className="btn btn-primary !min-h-[48px] !px-5" data-testid="link-start-free">Set up your queue <ArrowRight size={16} /></Link>
-              <span className="text-xs text-[#7d8798]">No customer accounts. No hardware to buy.</span>
+              <Link href="/create" className="btn btn-primary !min-h-[48px] !px-5" data-testid="link-start-free">{t('Set up your queue')} <ArrowRight size={16} /></Link>
+              <span className="text-xs text-[#7d8798]">{t('No customer accounts. No hardware to buy.')}</span>
             </div>
             <div className="mt-10 flex items-center gap-5 border-t border-[#e1e5ed] pt-5 text-[11px] font-medium text-[#758096]">
-              <span className="inline-flex items-center gap-2"><ShieldCheck size={15} className="text-[#6171db]" /> Private by design</span>
-              <span className="inline-flex items-center gap-2"><RefreshCw size={14} className="text-[#6171db]" /> Live updates</span>
+               <span className="inline-flex items-center gap-2"><ShieldCheck size={15} className="text-[#6171db]" /> {t('Private by design')}</span>
+               <span className="inline-flex items-center gap-2"><RefreshCw size={14} className="text-[#6171db]" /> {t('Live updates')}</span>
             </div>
           </div>
           <div className="fade-up-2 relative mx-auto w-full max-w-[490px]">
@@ -163,31 +181,31 @@ function Landing() {
             <div className="absolute -bottom-8 -left-9 size-32 rounded-full bg-[#dfeefa] blur-3xl" />
             <div className="surface relative rotate-[1.5deg] overflow-hidden p-5 sm:p-6">
               <div className="flex items-center justify-between border-b border-[#edf0f5] pb-4">
-                <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#eef0ff] text-[#4c5dd4]"><Scissors size={17} /></span><div><p className="text-sm font-bold text-[#29334a]">Queue preview</p><p className="text-[11px] text-[#8992a3]">Illustrative example</p></div></div>
-                <span className="status-pill status-serving"><span className="dot" />SAMPLE</span>
+                 <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#eef0ff] text-[#4c5dd4]"><Scissors size={17} /></span><div><p className="text-sm font-bold text-[#29334a]">{t('Queue preview')}</p><p className="text-[11px] text-[#8992a3]">{t('Illustrative example')}</p></div></div>
+                 <span className="status-pill status-serving"><span className="dot" />{t('SAMPLE')}</span>
               </div>
               <div className="grid grid-cols-2 gap-3 py-5">
-                <div className="rounded-xl bg-[#f5f6fa] p-4"><p className="eyebrow">Now serving</p><p className="mono mt-2 text-[35px] font-medium tracking-[-.07em] text-[#26324b]">A–08</p></div>
-                <div className="rounded-xl bg-[#f5f6fa] p-4"><p className="eyebrow">In line</p><p className="mono mt-2 text-[35px] font-medium tracking-[-.07em] text-[#26324b]">04</p></div>
+                 <div className="rounded-xl bg-[#f5f6fa] p-4"><p className="eyebrow">{t('Now serving')}</p><p className="mono mt-2 text-[35px] font-medium tracking-[-.07em] text-[#26324b]">A–08</p></div>
+                 <div className="rounded-xl bg-[#f5f6fa] p-4"><p className="eyebrow">{t('In line')}</p><p className="mono mt-2 text-[35px] font-medium tracking-[-.07em] text-[#26324b]">04</p></div>
               </div>
               <div className="rounded-xl border border-[#e8ebf2] bg-white p-4">
-                <div className="flex items-center justify-between"><div><p className="text-[11px] font-semibold text-[#7b8496]">UP NEXT</p><p className="mt-1 text-sm font-bold text-[#2d374d]">Ticket A–09</p></div><span className="mono rounded-lg bg-[#edf0ff] px-2.5 py-1.5 text-sm font-medium text-[#4c5dd4]">~12 min</span></div>
+                 <div className="flex items-center justify-between"><div><p className="text-[11px] font-semibold text-[#7b8496]">{t('UP NEXT')}</p><p className="mt-1 text-sm font-bold text-[#2d374d]">{t('Ticket A–09')}</p></div><span className="mono rounded-lg bg-[#edf0ff] px-2.5 py-1.5 text-sm font-medium text-[#4c5dd4]">{t('~12 min')}</span></div>
                 <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#edf0f5]"><div className="h-full w-[67%] rounded-full bg-[#6272dd]" /></div>
               </div>
               <div className="mt-4 flex items-center justify-between rounded-xl bg-[#4c5dd4] px-4 py-3.5 text-white">
-                <div><p className="text-xs font-semibold">Ready for the next customer?</p><p className="mt-0.5 text-[10px] text-white/70">One tap keeps everyone moving.</p></div><ArrowRight size={18} />
+                 <div><p className="text-xs font-semibold">{t('Ready for the next customer?')}</p><p className="mt-0.5 text-[10px] text-white/70">{t('One tap keeps everyone moving.')}</p></div><ArrowRight size={18} />
               </div>
               <div className="mt-4 flex justify-center gap-1.5"><span className="size-1.5 rounded-full bg-[#4c5dd4]" /><span className="size-1.5 rounded-full bg-[#d4d9e5]" /><span className="size-1.5 rounded-full bg-[#d4d9e5]" /></div>
             </div>
             <div className="absolute -bottom-7 -left-7 rounded-xl border border-[#dfe3ed] bg-white px-4 py-3 shadow-[0_10px_32px_rgba(40,54,92,.1)]">
-              <div className="flex items-center gap-2.5"><span className="grid size-8 place-items-center rounded-lg bg-[#e8f5ef] text-[#398168]"><Check size={16} /></span><div><p className="text-[11px] font-bold text-[#303a50]">Your turn is coming up</p><p className="text-[10px] text-[#828b9a]">Ticket A–09 · about 12 min</p></div></div>
+               <div className="flex items-center gap-2.5"><span className="grid size-8 place-items-center rounded-lg bg-[#e8f5ef] text-[#398168]"><Check size={16} /></span><div><p className="text-[11px] font-bold text-[#303a50]">{t('Your turn is coming up')}</p><p className="text-[10px] text-[#828b9a]">{t('Ticket A–09 · about 12 min')}</p></div></div>
             </div>
           </div>
         </div>
       </section>
       <section id="features" className="mx-auto max-w-[1180px] scroll-mt-8 px-5 py-14 sm:px-8 sm:py-20">
         <div className="grid gap-10 border-y border-[#e0e5ed] py-9 md:grid-cols-[.7fr_1.3fr]">
-          <div><p className="eyebrow">Made for the everyday rush</p><h2 className="mt-3 max-w-sm font-['Manrope'] text-3xl font-bold tracking-[-.06em] text-[#252f46]">The line moves.<br />Your day stays yours.</h2></div>
+           <div><p className="eyebrow">{t('Made for the everyday rush')}</p><h2 className="mt-3 max-w-sm font-display text-3xl font-bold tracking-[-.06em] text-[#252f46]">{t('The line moves.')}<br />{t('Your day stays yours.')}</h2></div>
           <div className="grid gap-8 sm:grid-cols-3">
             <Feature icon={<Ticket size={18} />} title="A ticket, not an account" text="Customers join in seconds with a name and a link. Nothing to install." />
             <Feature icon={<BellRing size={18} />} title="Know when it's close" text="A live ticket page shows their place and a practical wait estimate." />
@@ -196,7 +214,7 @@ function Landing() {
         </div>
       </section>
       <section id="how-it-works" className="mx-auto max-w-[1180px] scroll-mt-8 px-5 pb-16 sm:px-8 sm:pb-20">
-        <div className="mb-7 max-w-xl"><p className="eyebrow">HOW IT WORKS</p><h2 className="mt-3 font-['Manrope'] text-3xl font-bold tracking-[-.06em] text-[#252f46]">Four steps. A much shorter wait.</h2><p className="mt-3 text-sm leading-6 text-[#737e91]">Set up your service once, then let every customer follow the same clear process.</p></div>
+        <div className="mb-7 max-w-xl"><p className="eyebrow">{t('HOW IT WORKS')}</p><h2 className="mt-3 font-display text-3xl font-bold tracking-[-.06em] text-[#252f46]">{t('Four steps. A much shorter wait.')}</h2><p className="mt-3 text-sm leading-6 text-[#737e91]">{t('Set up your service once, then let every customer follow the same clear process.')}</p></div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StepCard number="01" title="Create your queue" text="Choose your business type, service pace, capacity, and owner access code." />
           <StepCard number="02" title="Share your link" text="Put the booking link on your site, social page, or at the front desk." />
@@ -206,14 +224,14 @@ function Landing() {
       </section>
       <section className="mx-auto max-w-[1180px] px-5 pb-16 sm:px-8 sm:pb-20">
         <div className="surface grid gap-8 p-6 sm:p-8 md:grid-cols-[.7fr_1.3fr]">
-          <div><p className="eyebrow">MADE FOR SERVICE BUSINESSES</p><h2 className="mt-3 font-['Manrope'] text-2xl font-bold tracking-[-.055em] text-[#252f46]">A calmer way to welcome people.</h2></div>
+          <div><p className="eyebrow">{t('MADE FOR SERVICE BUSINESSES')}</p><h2 className="mt-3 font-display text-2xl font-bold tracking-[-.055em] text-[#252f46]">{t('A calmer way to welcome people.')}</h2></div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {['Barbershops', 'Medical clinics', 'Beauty salons', 'Restaurants', 'Car washes', 'Repair shops'].map((businessType) => <div key={businessType} className="rounded-xl bg-[#f5f6fa] px-3 py-3 text-xs font-semibold text-[#4b5870]">{businessType}</div>)}
+            {['Barbershops', 'Medical clinics', 'Beauty salons', 'Restaurants', 'Car washes', 'Repair shops'].map((businessType) => <div key={businessType} className="rounded-xl bg-[#f5f6fa] px-3 py-3 text-xs font-semibold text-[#4b5870]">{t(businessType)}</div>)}
           </div>
         </div>
       </section>
       <section className="mx-auto max-w-[1180px] scroll-mt-8 px-5 pb-16 sm:px-8 sm:pb-20">
-        <div className="mb-7 max-w-xl"><p className="eyebrow">QUEUEUP FEATURES</p><h2 className="mt-3 font-['Manrope'] text-3xl font-bold tracking-[-.06em] text-[#252f46]">The useful details, handled.</h2></div>
+        <div className="mb-7 max-w-xl"><p className="eyebrow">{t('QUEUEUP FEATURES')}</p><h2 className="mt-3 font-display text-3xl font-bold tracking-[-.06em] text-[#252f46]">{t('The useful details, handled.')}</h2></div>
         <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
           <Feature icon={<Ticket size={18} />} title="Online ticket generation" text="Give each customer a numbered place without an account or app." />
           <Feature icon={<RefreshCw size={18} />} title="Live queue tracking" text="Ticket positions and current service status refresh automatically." />
@@ -227,25 +245,28 @@ function Landing() {
         <div className="relative overflow-hidden rounded-[24px] bg-[#222d48] p-7 text-white sm:p-12">
           <div className="absolute -right-12 -top-24 size-72 rounded-full border border-white/10" /><div className="absolute -right-3 -top-16 size-56 rounded-full border border-white/10" />
           <div className="relative flex flex-col items-start justify-between gap-7 sm:flex-row sm:items-end">
-            <div><p className="eyebrow !text-[#aeb9e8]">Start small. Stay in control.</p><h2 className="mt-3 max-w-xl font-['Manrope'] text-[clamp(28px,5vw,46px)] font-bold leading-tight tracking-[-.06em]">Your queue, ready before the next customer walks in.</h2></div>
-            <Link href="/create" className="btn !min-h-[46px] !shrink-0 bg-white !text-[#303c5c]" data-testid="link-create-bottom">Create your queue <ArrowRight size={16} /></Link>
+            <div><p className="eyebrow !text-[#aeb9e8]">{t('Start small. Stay in control.')}</p><h2 className="mt-3 max-w-xl font-display text-[clamp(28px,5vw,46px)] font-bold leading-tight tracking-[-.06em]">{t('Your queue, ready before the next customer walks in.')}</h2></div>
+            <Link href="/create" className="btn !min-h-[46px] !shrink-0 bg-white !text-[#303c5c]" data-testid="link-create-bottom">{t('Create your queue')} <ArrowRight size={16} /></Link>
           </div>
         </div>
       </section>
     </main>
-    <footer className="mx-auto flex max-w-[1180px] items-center justify-between border-t border-[#e0e5ed] px-5 py-6 text-[11px] text-[#7d8798] sm:px-8"><Brand compact /><span>QueueUp · A little more room in your day.</span></footer>
+    <footer className="mx-auto flex max-w-[1180px] items-center justify-between border-t border-[#e0e5ed] px-5 py-6 text-[11px] text-[#7d8798] sm:px-8"><Brand compact showLanguage={false} /><span>{t('QueueUp · A little more room in your day.')}</span></footer>
   </div>;
 }
 
 function Feature({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
-  return <div><span className="grid size-9 place-items-center rounded-xl bg-[#edf0ff] text-[#5364d3]">{icon}</span><h3 className="mt-4 text-sm font-bold text-[#2d374d]">{title}</h3><p className="mt-2 text-[12px] leading-5 text-[#737e91]">{text}</p></div>;
+  const t = useT();
+  return <div><span className="grid size-9 place-items-center rounded-xl bg-[#edf0ff] text-[#5364d3]">{icon}</span><h3 className="mt-4 text-sm font-bold text-[#2d374d]">{t(title)}</h3><p className="mt-2 text-[12px] leading-5 text-[#737e91]">{t(text)}</p></div>;
 }
 
 function StepCard({ number, title, text }: { number: string; title: string; text: string }) {
-  return <div className="surface p-5"><span className="mono text-[11px] text-[#5869d7]">{number}</span><h3 className="mt-4 text-sm font-bold text-[#303a50]">{title}</h3><p className="mt-2 text-xs leading-5 text-[#737e91]">{text}</p></div>;
+  const t = useT();
+  return <div className="surface p-5"><span className="mono text-[11px] text-[#5869d7]">{number}</span><h3 className="mt-4 text-sm font-bold text-[#303a50]">{t(title)}</h3><p className="mt-2 text-xs leading-5 text-[#737e91]">{t(text)}</p></div>;
 }
 
 function CreateBusiness() {
+  const t = useT();
   const create = useCreateBusiness();
   const [, setLocation] = useLocation();
   const [form, setForm] = useState({ name: '', category: BusinessCategory.Barbershop, averageServiceMinutes: '20', maxActiveCapacity: '35', accessCode: '', confirmAccessCode: '' });
@@ -267,25 +288,25 @@ function CreateBusiness() {
     });
   };
   return <div className="app-shell">
-    <header className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#677287] hover:text-[#303a50]" data-testid="link-back-home">Back to QueueUp</Link></header>
+    <header className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#677287] hover:text-[#303a50]" data-testid="link-back-home">{t('Back to QueueUp')}</Link></header>
     <main className="mx-auto grid max-w-[1100px] gap-12 px-5 pb-14 pt-5 sm:px-8 md:grid-cols-[.8fr_1.2fr] md:gap-20 md:pt-14">
       <div className="fade-up">
-        <p className="eyebrow">For the people keeping things moving</p>
-        <h1 className="mt-4 max-w-md font-['Manrope'] text-[42px] font-extrabold leading-[1.08] tracking-[-.07em] text-[#202a40] sm:text-[52px]">A better line starts here.</h1>
-        <p className="mt-5 max-w-sm text-sm leading-6 text-[#6e788b]">Set up the queue once. Then focus on your customers while QueueUp handles the numbers.</p>
+        <p className="eyebrow">{t('For the people keeping things moving')}</p>
+        <h1 className="mt-4 max-w-md font-display text-[42px] font-extrabold leading-[1.08] tracking-[-.07em] text-[#202a40] sm:text-[52px]">{t('A better line starts here.')}</h1>
+        <p className="mt-5 max-w-sm text-sm leading-6 text-[#6e788b]">{t('Set up the queue once. Then focus on your customers while QueueUp handles the numbers.')}</p>
         <div className="mt-9 space-y-4">
           <Step number="01" title="Choose your pace" text="Set a useful service-time estimate and queue limit." />
           <Step number="02" title="Share one simple link" text="Customers reserve a spot without making an account." />
           <Step number="03" title="Run your day" text="Call tickets and show a live number on any screen." />
         </div>
-        <div className="mt-10 flex items-center gap-2 text-[11px] text-[#8790a0]"><LockKeyhole size={14} /> Your access code is never saved in this browser.</div>
+        <div className="mt-10 flex items-center gap-2 text-[11px] text-[#8790a0]"><LockKeyhole size={14} /> {t('Your access code is never saved in this browser.')}</div>
       </div>
       <form onSubmit={submit} className="surface fade-up-2 mx-auto w-full max-w-[560px] p-5 sm:p-8">
-        <div className="mb-7"><span className="status-pill status-waiting">BUSINESS SETUP</span><h2 className="mt-4 text-xl font-bold tracking-[-.04em] text-[#27324a]">Create your queue</h2><p className="mt-1.5 text-xs text-[#788397]">A few details now. You can adjust them later.</p></div>
+        <div className="mb-7"><span className="status-pill status-waiting">{t('BUSINESS SETUP')}</span><h2 className="mt-4 text-xl font-bold tracking-[-.04em] text-[#27324a]">{t('Create your queue')}</h2><p className="mt-1.5 text-xs text-[#788397]">{t('A few details now. You can adjust them later.')}</p></div>
         <div className="space-y-5">
           <Field label="Business name" placeholder="e.g. Northside Studio" value={form.name} onChange={(e) => update('name', e.target.value)} minLength={2} maxLength={100} required autoComplete="organization" data-testid="input-business-name" />
           <SelectField label="What kind of business?" value={form.category} onChange={(e) => update('category', e.target.value)} data-testid="select-business-category">
-            {categoryOptions.map((category) => <option key={category} value={category}>{category}</option>)}
+            {categoryOptions.map((category) => <option key={category} value={category}>{t(category)}</option>)}
           </SelectField>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Minutes per customer" type="number" min={1} max={240} value={form.averageServiceMinutes} onChange={(e) => update('averageServiceMinutes', e.target.value)} required data-testid="input-service-minutes" />
@@ -297,19 +318,21 @@ function CreateBusiness() {
             <p className="mt-2 text-[10px] leading-4 text-[#828b9b]">You'll use this to sign in to your owner dashboard. Keep it somewhere safe.</p>
           </div>
           {error && <InlineError message={error} />}
-          <Button type="submit" disabled={create.isPending} className="w-full !min-h-[48px]" testId="button-create-business">{create.isPending ? 'Setting up your queue…' : <>Create queue <ArrowRight size={16} /></>}</Button>
+          <Button type="submit" disabled={create.isPending} className="w-full !min-h-[48px]" testId="button-create-business">{create.isPending ? t('Setting up your queue…') : <>{t('Create queue')} <ArrowRight size={16} /></>}</Button>
         </div>
-        <p className="mt-4 text-center text-[10px] leading-4 text-[#8992a1]">By continuing, you create an owner-managed public queue page and a privacy-safe display.</p>
+        <p className="mt-4 text-center text-[10px] leading-4 text-[#8992a1]">{t('By continuing, you create an owner-managed public queue page and a privacy-safe display.')}</p>
       </form>
     </main>
   </div>;
 }
 
 function Step({ number, title, text }: { number: string; title: string; text: string }) {
-  return <div className="flex gap-3"><span className="mono pt-0.5 text-[11px] text-[#6474da]">{number}</span><div><p className="text-xs font-bold text-[#354058]">{title}</p><p className="mt-1 text-[11px] leading-5 text-[#7c8698]">{text}</p></div></div>;
+  const t = useT();
+  return <div className="flex gap-3"><span className="mono pt-0.5 text-[11px] text-[#6474da]">{number}</span><div><p className="text-xs font-bold text-[#354058]">{t(title)}</p><p className="mt-1 text-[11px] leading-5 text-[#7c8698]">{t(text)}</p></div></div>;
 }
 
 function ManageEntry() {
+  const t = useT();
   const [, setLocation] = useLocation();
   const [businessPath, setBusinessPath] = useState('');
   const [error, setError] = useState('');
@@ -324,19 +347,21 @@ function ManageEntry() {
     setLocation(`/manage/${encodeURIComponent(slug)}`);
   };
   return <div className="app-shell">
-    <header className="mx-auto flex max-w-[1040px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#6d788c]" data-testid="link-manage-entry-home">QueueUp home</Link></header>
+    <header className="mx-auto flex max-w-[1040px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#6d788c]" data-testid="link-manage-entry-home">{t('QueueUp home')}</Link></header>
     <main className="mx-auto grid max-w-[1040px] gap-10 px-5 pb-12 pt-8 sm:px-8 md:grid-cols-[.9fr_1.1fr] md:pt-14">
-      <div><p className="eyebrow">OWNER ACCESS</p><h1 className="mt-4 font-['Manrope'] text-[42px] font-extrabold leading-tight tracking-[-.07em] text-[#202a40]">Pick up where your queue is.</h1><p className="mt-4 max-w-sm text-sm leading-6 text-[#737e91]">Enter the business slug or the owner dashboard link you saved when setting up.</p></div>
+      <div><p className="eyebrow">{t('OWNER ACCESS')}</p><h1 className="mt-4 font-display text-[42px] font-extrabold leading-tight tracking-[-.07em] text-[#202a40]">{t('Pick up where your queue is.')}</h1><p className="mt-4 max-w-sm text-sm leading-6 text-[#737e91]">{t('Enter the business slug or the owner dashboard link you saved when setting up.')}</p></div>
       <form onSubmit={submit} className="surface mx-auto w-full max-w-[480px] p-6 sm:p-8">
         <Field label="Business slug or dashboard link" placeholder="e.g. northside-studio-a1b2c3d4e5" value={businessPath} onChange={(event) => setBusinessPath(event.target.value)} required data-testid="input-business-slug" />
         {error && <div className="mt-4"><InlineError message={error} /></div>}
-        <Button type="submit" className="mt-5 w-full !min-h-[47px]" testId="button-open-owner-dashboard">Continue <ArrowRight size={15} /></Button>
+        <Button type="submit" className="mt-5 w-full !min-h-[47px]" testId="button-open-owner-dashboard">{t('Continue')} <ArrowRight size={15} /></Button>
       </form>
     </main>
   </div>;
 }
 
 function BookingPage() {
+  const { language } = useLanguage();
+  const t = useT();
   const { slug = '' } = useParams<{ slug: string }>();
   const query = useGetPublicBusiness(slug, { query: { queryKey: getGetPublicBusinessQueryKey(slug), refetchInterval: 3000 } });
   const join = useJoinQueue();
@@ -374,28 +399,28 @@ function BookingPage() {
     <header className="mx-auto flex w-full max-w-[1060px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><span className="inline-flex items-center gap-2 text-[11px] font-medium text-[#758096]"><ShieldCheck size={14} className="text-[#4c5dd4]" /> Private ticket</span></header>
     <main className="mx-auto grid w-full max-w-[1060px] flex-1 items-start gap-8 px-5 pb-12 pt-5 sm:px-8 md:grid-cols-[1fr_.82fr] md:gap-12 md:pt-12">
       <section className="fade-up">
-        <p className="eyebrow">{business?.category} · VIRTUAL QUEUE</p>
+        <p className="eyebrow">{business?.category ? t(business.category) : ''} · {t('VIRTUAL QUEUE')}</p>
         <h1 className="mt-3 font-['Manrope'] text-[clamp(36px,6vw,56px)] font-extrabold leading-[1.05] tracking-[-.075em] text-[#202a40]" data-testid="text-business-name">{business?.name}</h1>
-        <p className="mt-4 max-w-md text-sm leading-6 text-[#737e91]">Take your place in line from here. We'll keep your ticket updated while you get on with your day.</p>
+        <p className="mt-4 max-w-md text-sm leading-6 text-[#737e91]">{t("Take your place in line from here. We'll keep your ticket updated while you get on with your day.")}</p>
         <div className="surface mt-8 grid grid-cols-2 divide-x divide-[#edf0f4] p-5 sm:p-6">
-          <div className="pr-4"><p className="eyebrow">People waiting</p><p className="mono mt-2 text-3xl text-[#29344d]" data-testid="text-waiting-count">{query.data.queue.waitingCount}</p></div>
-          <div className="pl-5"><p className="eyebrow">Typical service</p><p className="mono mt-2 text-3xl text-[#29344d]">{business?.averageServiceMinutes}<span className="ml-1 text-sm text-[#8790a0]">min</span></p></div>
+          <div className="pe-4"><p className="eyebrow">{t('People waiting')}</p><p className="mono mt-2 text-3xl text-[#29344d]" data-testid="text-waiting-count">{formatNumber(query.data.queue.waitingCount, language)}</p></div>
+          <div className="ps-5"><p className="eyebrow">{t('Typical service')}</p><p className="mono mt-2 text-3xl text-[#29344d]">{business?.averageServiceMinutes ? formatNumber(business.averageServiceMinutes, language) : '—'}<span className="ms-1 text-sm text-[#8790a0]">{t('min')}</span></p></div>
         </div>
-        <div className="mt-5 flex gap-3 rounded-xl bg-[#edf0ff] p-4 text-[12px] leading-5 text-[#5f6a88]"><LockKeyhole size={16} className="mt-0.5 shrink-0 text-[#5668d5]" /><p>Your ticket is private to this browser. No account or phone number needed.</p></div>
+        <div className="mt-5 flex gap-3 rounded-xl bg-[#edf0ff] p-4 text-[12px] leading-5 text-[#5f6a88]"><LockKeyhole size={16} className="mt-0.5 shrink-0 text-[#5668d5]" /><p>{t('Your ticket is private to this browser. No account or phone number needed.')}</p></div>
       </section>
       <section className="surface fade-up-2 p-5 sm:p-7">
-        {business?.isPaused ? <div className="py-7 text-center" data-testid="status-queue-paused"><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#fff3dd] text-[#996111]"><Pause size={20} /></span><h2 className="mt-4 text-lg font-bold text-[#303a50]">The queue is taking a pause</h2><p className="mx-auto mt-2 max-w-xs text-xs leading-5 text-[#788397]">New tickets aren't available right now. Check back soon.</p></div>
-          : query.data.queue.availableSpots <= 0 ? <div className="py-7 text-center" data-testid="status-queue-full"><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#edf0ff] text-[#4c5dd4]"><Users size={20} /></span><h2 className="mt-4 text-lg font-bold text-[#303a50]">The queue is full for now</h2><p className="mx-auto mt-2 max-w-xs text-xs leading-5 text-[#788397]">There are no open spots at the moment. Please check again in a little while.</p></div>
+        {business?.isPaused ? <div className="py-7 text-center" data-testid="status-queue-paused"><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#fff3dd] text-[#996111]"><Pause size={20} /></span><h2 className="mt-4 text-lg font-bold text-[#303a50]">{t('The queue is taking a pause')}</h2><p className="mx-auto mt-2 max-w-xs text-xs leading-5 text-[#788397]">{t("New tickets aren't available right now. Check back soon.")}</p></div>
+          : query.data.queue.availableSpots <= 0 ? <div className="py-7 text-center" data-testid="status-queue-full"><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#edf0ff] text-[#4c5dd4]"><Users size={20} /></span><h2 className="mt-4 text-lg font-bold text-[#303a50]">{t('The queue is full for now')}</h2><p className="mx-auto mt-2 max-w-xs text-xs leading-5 text-[#788397]">{t('There are no open spots at the moment. Please check again in a little while.')}</p></div>
           : <form onSubmit={reserve} className="space-y-5">
-            <div><span className="status-pill status-waiting"><span className="dot" />{query.data.queue.availableSpots} spots available</span><h2 className="mt-4 text-xl font-bold tracking-[-.045em] text-[#29334b]">Join the queue</h2><p className="mt-1 text-xs text-[#788397]">Just your name. We'll make you a ticket.</p></div>
+             <div><span className="status-pill status-waiting"><span className="dot" />{formatNumber(query.data.queue.availableSpots, language)} {t('spots available')}</span><h2 className="mt-4 text-xl font-bold tracking-[-.045em] text-[#29334b]">{t('Join the queue')}</h2><p className="mt-1 text-xs text-[#788397]">{t("Just your name. We'll make you a ticket.")}</p></div>
             <Field label="Your name" placeholder="Name for your ticket" autoComplete="given-name" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} required data-testid="input-customer-name" />
             {error && <InlineError message={error} />}
-            <Button type="submit" disabled={join.isPending} className="w-full !min-h-[48px]" testId="button-join-queue">{join.isPending ? 'Saving your place…' : <>Get my ticket <ArrowRight size={16} /></>}</Button>
-            <p className="text-center text-[10px] text-[#929aa8]">By joining, you agree to be called by your ticket number.</p>
+             <Button type="submit" disabled={join.isPending} className="w-full !min-h-[48px]" testId="button-join-queue">{join.isPending ? t('Saving your place…') : <>{t('Get my ticket')} <ArrowRight size={16} /></>}</Button>
+             <p className="text-center text-[10px] text-[#929aa8]">{t('By joining, you agree to be called by your ticket number.')}</p>
           </form>}
       </section>
     </main>
-    <footer className="mx-auto flex w-full max-w-[1060px] items-center justify-between px-5 py-5 text-[10px] text-[#8b94a4] sm:px-8"><span>Powered by QueueUp</span><Link href="/" className="hover:text-[#5364d3]" data-testid="link-about-queueup">About QueueUp</Link></footer>
+    <footer className="mx-auto flex w-full max-w-[1060px] items-center justify-between px-5 py-5 text-[10px] text-[#8b94a4] sm:px-8"><span>{t('Powered by QueueUp')}</span><Link href="/" className="hover:text-[#5364d3]" data-testid="link-about-queueup">{t('About QueueUp')}</Link></footer>
   </div>;
 }
 
