@@ -1,0 +1,691 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: QueueUp business and digital queue management API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: businesses
+    description: Queue setup and public business information
+  - name: tickets
+    description: Customer tickets and queue state
+  - name: management
+    description: Business owner queue management
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /businesses:
+    post:
+      operationId: createBusiness
+      tags: [businesses]
+      summary: Create a business queue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessInput"
+      responses:
+        "201":
+          description: Business queue created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /businesses/{slug}/public:
+    get:
+      operationId: getPublicBusiness
+      tags: [businesses]
+      summary: Get public booking information for a business
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Public business information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicBusiness"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /businesses/{slug}/tickets:
+    post:
+      operationId: joinQueue
+      tags: [tickets]
+      summary: Join a business queue
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinQueueInput"
+      responses:
+        "201":
+          description: Customer ticket created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JoinedTicket"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Queue is paused, full, or this browser already has an active ticket
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /businesses/{slug}/tickets/{ticketId}:
+    get:
+      operationId: getCustomerTicket
+      tags: [tickets]
+      summary: Get a customer's ticket and current queue position
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+        - $ref: "#/components/parameters/TicketId"
+        - name: X-Ticket-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Customer's ticket status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerTicket"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /businesses/{slug}/display:
+    get:
+      operationId: getQueueDisplay
+      tags: [tickets]
+      summary: Get a privacy-safe public queue display
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Current ticket and next tickets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueueDisplay"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /businesses/{slug}/auth:
+    post:
+      operationId: loginBusiness
+      tags: [management]
+      summary: Sign in to a business dashboard
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessLoginInput"
+      responses:
+        "200":
+          description: Owner session started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          description: Too many sign-in attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /businesses/{slug}/auth/logout:
+    post:
+      operationId: logoutBusiness
+      tags: [management]
+      summary: Sign out of a business dashboard
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Owner session ended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /businesses/{slug}/manage:
+    get:
+      operationId: getManagementDashboard
+      tags: [management]
+      summary: Get dashboard stats and queue tickets
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateBusiness
+      tags: [management]
+      summary: Update business settings
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessUpdate"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /businesses/{slug}/queue:
+    patch:
+      operationId: updateQueueState
+      tags: [management]
+      summary: Pause or resume customer bookings
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueueStateInput"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /businesses/{slug}/queue/call-next:
+    post:
+      operationId: callNextCustomer
+      tags: [management]
+      summary: Call the oldest waiting customer
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /businesses/{slug}/queue/recall:
+    post:
+      operationId: recallCurrentCustomer
+      tags: [management]
+      summary: Recall the current customer
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /businesses/{slug}/tickets/{ticketId}/start:
+    post:
+      operationId: startService
+      tags: [management]
+      summary: Start serving a called customer
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+        - $ref: "#/components/parameters/TicketId"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /businesses/{slug}/tickets/{ticketId}/complete:
+    post:
+      operationId: completeService
+      tags: [management]
+      summary: Complete a customer's service
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+        - $ref: "#/components/parameters/TicketId"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /businesses/{slug}/tickets/{ticketId}/skip:
+    post:
+      operationId: skipTicket
+      tags: [management]
+      summary: Skip an active customer ticket
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+        - $ref: "#/components/parameters/TicketId"
+      responses:
+        "200":
+          description: Updated business dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManagementDashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+components:
+  parameters:
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    TicketId:
+      name: ticketId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Ticket access token is invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Owner sign-in is required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflict:
+      description: Queue operation cannot be completed in the current state
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+    BusinessCategory:
+      type: string
+      enum:
+        - Barbershop
+        - Medical Clinic
+        - Beauty Salon
+        - Restaurant
+        - Car Wash
+        - Repair Shop
+        - Other
+    TicketStatus:
+      type: string
+      enum:
+        - Waiting
+        - Called
+        - Serving
+        - Completed
+        - Skipped
+    Business:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        category:
+          $ref: "#/components/schemas/BusinessCategory"
+        averageServiceMinutes:
+          type: integer
+        maxActiveCapacity:
+          type: integer
+        isPaused:
+          type: boolean
+      required:
+        - id
+        - name
+        - slug
+        - category
+        - averageServiceMinutes
+        - maxActiveCapacity
+        - isPaused
+    BusinessInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        category:
+          $ref: "#/components/schemas/BusinessCategory"
+        averageServiceMinutes:
+          type: integer
+          minimum: 1
+          maximum: 240
+        maxActiveCapacity:
+          type: integer
+          minimum: 1
+          maximum: 500
+        accessCode:
+          type: string
+          minLength: 6
+          maxLength: 128
+      required:
+        - name
+        - category
+        - averageServiceMinutes
+        - maxActiveCapacity
+        - accessCode
+    BusinessCreated:
+      type: object
+      properties:
+        business:
+          $ref: "#/components/schemas/Business"
+        bookingPath:
+          type: string
+        managePath:
+          type: string
+        displayPath:
+          type: string
+      required: [business, bookingPath, managePath, displayPath]
+    QueueSummary:
+      type: object
+      properties:
+        waitingCount:
+          type: integer
+        activeCount:
+          type: integer
+        availableSpots:
+          type: integer
+        currentTicketNumber:
+          type: ["string", "null"]
+      required:
+        - waitingCount
+        - activeCount
+        - availableSpots
+        - currentTicketNumber
+    PublicBusiness:
+      type: object
+      properties:
+        business:
+          $ref: "#/components/schemas/Business"
+        queue:
+          $ref: "#/components/schemas/QueueSummary"
+      required: [business, queue]
+    JoinQueueInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+          maxLength: 80
+        clientToken:
+          type: string
+          minLength: 16
+          maxLength: 128
+      required: [customerName, clientToken]
+    CustomerTicket:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ticketNumber:
+          type: string
+        customerName:
+          type: string
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        customersAhead:
+          type: integer
+        activeQueueSize:
+          type: integer
+        estimatedWaitMinutes:
+          type: integer
+        currentTicketNumber:
+          type: ["string", "null"]
+        businessName:
+          type: string
+        isPaused:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - ticketNumber
+        - customerName
+        - status
+        - customersAhead
+        - activeQueueSize
+        - estimatedWaitMinutes
+        - currentTicketNumber
+        - businessName
+        - isPaused
+        - updatedAt
+    JoinedTicket:
+      allOf:
+        - $ref: "#/components/schemas/CustomerTicket"
+        - type: object
+          properties:
+            ticketAccessToken:
+              type: string
+          required: [ticketAccessToken]
+    QueueDisplay:
+      type: object
+      properties:
+        businessName:
+          type: string
+        currentTicketNumber:
+          type: ["string", "null"]
+        nextTicketNumbers:
+          type: array
+          items:
+            type: string
+        waitingCount:
+          type: integer
+        isPaused:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - businessName
+        - currentTicketNumber
+        - nextTicketNumbers
+        - waitingCount
+        - isPaused
+        - updatedAt
+    BusinessLoginInput:
+      type: object
+      properties:
+        accessCode:
+          type: string
+          minLength: 6
+          maxLength: 128
+      required: [accessCode]
+    BusinessUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        category:
+          $ref: "#/components/schemas/BusinessCategory"
+        averageServiceMinutes:
+          type: integer
+          minimum: 1
+          maximum: 240
+        maxActiveCapacity:
+          type: integer
+          minimum: 1
+          maximum: 500
+      minProperties: 1
+    QueueStateInput:
+      type: object
+      properties:
+        isPaused:
+          type: boolean
+      required: [isPaused]
+    ManagementTicket:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ticketNumber:
+          type: string
+        customerName:
+          type: string
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        createdAt:
+          type: string
+          format: date-time
+        calledAt:
+          type: ["string", "null"]
+          format: date-time
+        startedAt:
+          type: ["string", "null"]
+          format: date-time
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+        recallCount:
+          type: integer
+      required:
+        - id
+        - ticketNumber
+        - customerName
+        - status
+        - createdAt
+        - calledAt
+        - startedAt
+        - completedAt
+        - recallCount
+    DashboardStats:
+      type: object
+      properties:
+        waitingCustomers:
+          type: integer
+        currentlyServing:
+          type: integer
+        completedTickets:
+          type: integer
+        averageWaitingMinutes:
+          type: integer
+      required:
+        - waitingCustomers
+        - currentlyServing
+        - completedTickets
+        - averageWaitingMinutes
+    ManagementDashboard:
+      type: object
+      properties:
+        business:
+          $ref: "#/components/schemas/Business"
+        stats:
+          $ref: "#/components/schemas/DashboardStats"
+        tickets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManagementTicket"
+      required: [business, stats, tickets]
+
