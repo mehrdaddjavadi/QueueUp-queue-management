@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
@@ -25,6 +25,7 @@
   --color-destructive-foreground: hsl(var(--destructive-foreground));
   --font-sans: var(--app-font-sans);
   --font-mono: var(--app-font-mono);
+  --font-display: var(--app-font-display);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -50,6 +51,7 @@
   --destructive-foreground: 0 0% 100%;
   --ring: 231 75% 54%;
   --app-font-sans: 'DM Sans', sans-serif;
+  --app-font-display: 'Manrope', sans-serif;
   --app-font-mono: 'DM Mono', monospace;
   --radius: 0.8rem;
   --sidebar: 222 38% 17%;
@@ -98,6 +100,19 @@
 }
 
 :root { font-synthesis: none; text-rendering: optimizeLegibility; }
+html[lang="fa"] {
+  --app-font-sans: 'Vazirmatn', 'DM Sans', sans-serif;
+  --app-font-display: 'Vazirmatn', sans-serif;
+}
+html[lang="fa"] .font-display { letter-spacing: 0 !important; }
+[dir="rtl"] .eyebrow {
+  font-family: 'Vazirmatn', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+[dir="rtl"] .mono { direction: ltr; unicode-bidi: isolate; }
+[dir="rtl"] svg.lucide-arrow-right,
+[dir="rtl"] svg.lucide-chevron-right { transform: scaleX(-1); }
 .app-shell { min-height: 100dvh; }
 .wordmark { font-family: 'Manrope', sans-serif; font-weight: 800; letter-spacing: -0.065em; }
 .eyebrow { font: 500 11px/1.3 'DM Mono', monospace; letter-spacing: .11em; text-transform: uppercase; color: #747d92; }

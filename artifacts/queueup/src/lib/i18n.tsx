@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export type Language = 'en' | 'fa';
 
@@ -7,6 +7,7 @@ const languageStorageKey = 'queueup:language';
 const persian: Record<string, string> = {
   'Switch to Persian': 'تغییر زبان به فارسی',
   'Switch to English': 'تغییر زبان به انگلیسی',
+  'Open link': 'باز کردن لینک',
   'Loading your queue': 'صف شما در حال بارگذاری است',
   'Finding this queue': 'در حال پیدا کردن صف',
   'Finding your ticket': 'در حال پیدا کردن نوبت شما',
@@ -15,6 +16,9 @@ const persian: Record<string, string> = {
   "We couldn't complete that": 'انجام این کار ممکن نشد',
   Retry: 'تلاش دوباره',
   'Something went wrong. Please try again.': 'مشکلی پیش آمد. لطفاً دوباره تلاش کنید.',
+  'Something went wrong': 'مشکلی پیش آمد',
+  'This part of the app hit an error. The rest of the app is still running.':
+    'در بخشی از برنامه خطایی رخ داد؛ سایر بخش‌ها همچنان در دسترس هستند.',
   'How it works': 'نحوه کار',
   Features: 'امکانات',
   'Manage queue': 'مدیریت صف',
@@ -48,6 +52,7 @@ const persian: Record<string, string> = {
   'Customers join in seconds with a name and a link. Nothing to install.':
     'مشتری فقط با واردکردن نام و بازکردن لینک، در چند ثانیه وارد صف می‌شود؛ نیازی به نصب نیست.',
   'Know when it’s close': 'از نزدیک‌شدن نوبت باخبر شوید',
+  "Know when it's close": 'از نزدیک‌شدن نوبت باخبر شوید',
   'A live ticket page shows their place and a practical wait estimate.':
     'صفحه زنده نوبت، جایگاه و زمان تقریبی انتظار را نشان می‌دهد.',
   'One clear display': 'نمایشگر ساده و روشن',
@@ -152,6 +157,8 @@ const persian: Record<string, string> = {
   'VIRTUAL QUEUE': 'صف مجازی',
   'Take your place in line from here. We’ll keep your ticket updated while you get on with your day.':
     'از همین‌جا جای خود را در صف بگیرید. هنگام رسیدگی به کارهایتان، وضعیت نوبت را برایتان به‌روز نگه می‌داریم.',
+  "Take your place in line from here. We'll keep your ticket updated while you get on with your day.":
+    'از همین‌جا جای خود را در صف بگیرید. هنگام رسیدگی به کارهایتان، وضعیت نوبت را برایتان به‌روز نگه می‌داریم.',
   'People waiting': 'افراد در انتظار',
   'Typical service': 'زمان معمول خدمت',
   min: 'دقیقه',
@@ -192,6 +199,11 @@ const persian: Record<string, string> = {
   'Visit complete': 'خدمت انجام شد',
   'Ticket skipped': 'نوبت رد شد',
   'Ahead of you': 'افراد پیش از شما',
+  'current ticket': 'نوبت فعلی',
+  'Called': 'فراخوانی‌شده',
+  'Serving': 'در حال خدمت‌رسانی',
+  'Completed': 'انجام‌شده',
+  'Skipped': 'ردشده',
   customers: 'مشتری',
   'Active queue': 'صف فعال',
   tickets: 'نوبت',
@@ -217,6 +229,7 @@ const persian: Record<string, string> = {
   'Access code': 'رمز دسترسی',
   'Your owner access code': 'رمز دسترسی مدیر',
   'That access code did not work.': 'رمز دسترسی درست نیست.',
+  'The access code is incorrect': 'رمز دسترسی نادرست است.',
   'Sign in to access this owner dashboard.': 'برای دسترسی به پنل مدیریت وارد شوید.',
   'Signing in…': 'در حال ورود…',
   'Open dashboard': 'باز کردن پنل مدیریت',
@@ -285,7 +298,10 @@ const persian: Record<string, string> = {
   Recall: 'فراخوانی دوباره',
   Skip: 'رد کردن',
   'READY WHEN YOU ARE': 'هر وقت آماده‌اید',
+  'Your queue,': 'صف شما،',
+  'your rhythm.': 'با ریتم خودتان.',
   'is next': 'نفر بعد است',
+  'joined at': 'ورود در',
   'No one is waiting right now': 'در حال حاضر کسی در صف نیست',
   'joined ·': 'ورود ·',
   'Your queue is clear.': 'صف شما خالی است.',
@@ -308,7 +324,6 @@ const persian: Record<string, string> = {
   'Private business management link': 'لینک خصوصی مدیریت کسب‌وکار',
   'Public TV display': 'نمایشگر عمومی',
   'Shows ticket numbers, never names': 'نمایش شماره نوبت، بدون نام',
-  'Open ': 'بازکردن ',
   Copied: 'کپی شد',
   'Copy link': 'کپی لینک',
   'Queue settings': 'تنظیمات صف',
@@ -326,6 +341,7 @@ const persian: Record<string, string> = {
   'Saving changes…': 'در حال ذخیره تغییرات…',
   'Save settings': 'ذخیره تنظیمات',
   'LIVE QUEUE DISPLAY': 'نمایش زنده صف',
+  NEXT: 'نوبت بعد',
   LIVE: 'زنده',
   'Queue paused': 'صف متوقف است',
   'Please come to the counter': 'لطفاً به پیشخوان مراجعه کنید',
@@ -338,6 +354,7 @@ const persian: Record<string, string> = {
   'Updates automatically': 'به‌روزرسانی خودکار',
   '404 Page Not Found': '۴۰۴ · صفحه پیدا نشد',
   'Did you forget to add the page to the router?': 'این صفحه در مسیرهای برنامه ثبت نشده است.',
+  Barbershop: 'آرایشگاه مردانه',
   'Beauty Salon': 'سالن زیبایی',
   'Medical Clinic': 'درمانگاه',
   Restaurant: 'رستوران',
@@ -355,6 +372,8 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 function getInitialLanguage(): Language {
   try {
+    const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+    if (requestedLanguage === 'fa' || requestedLanguage === 'en') return requestedLanguage;
     return window.localStorage.getItem(languageStorageKey) === 'fa' ? 'fa' : 'en';
   } catch {
     return 'en';
@@ -362,7 +381,13 @@ function getInitialLanguage(): Language {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>(getInitialLanguage);
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+  const setLanguage = useCallback((nextLanguage: Language) => {
+    setLanguageState(nextLanguage);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('lang');
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }, []);
   const value = useMemo(() => ({ language, setLanguage }), [language]);
 
   useEffect(() => {
@@ -386,7 +411,11 @@ export function useLanguage() {
 
 export function useT() {
   const { language } = useLanguage();
-  return (text: string) => (language === 'fa' ? persian[text] || text : text);
+  return (text: string) => translateText(text, language);
+}
+
+export function translateText(text: string, language: Language) {
+  return language === 'fa' ? persian[text] || text : text;
 }
 
 export function formatNumber(value: number, language: Language) {

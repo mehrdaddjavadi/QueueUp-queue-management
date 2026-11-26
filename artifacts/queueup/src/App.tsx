@@ -35,7 +35,7 @@ import NotFound from '@/pages/not-found';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { formatNumber, LanguageProvider, useLanguage, useT } from '@/lib/i18n';
+import { formatNumber, LanguageProvider, type Language, useLanguage, useT } from '@/lib/i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: true } },
@@ -67,28 +67,31 @@ function errorText(error: unknown, fallback = 'Something went wrong. Please try 
 }
 
 function Brand({ compact = false, showLanguage = true }: { compact?: boolean; showLanguage?: boolean }) {
-  const { language, setLanguage } = useLanguage();
-  const t = useT();
   return (
     <div className="inline-flex items-center gap-3">
       <Link href="/" className="inline-flex items-center gap-2.5 text-inherit no-underline" data-testid="link-home-brand">
         <span className="grid size-9 place-items-center rounded-xl bg-[#4c5dd4] text-white shadow-sm">
           <Activity size={19} strokeWidth={2.4} />
         </span>
-        {!compact && <span className="wordmark text-[19px] leading-none tracking-[-.07em]">queueup</span>}
+        {!compact && <span dir="ltr" className="wordmark text-[19px] leading-none tracking-[-.07em]">queueup</span>}
       </Link>
-      {showLanguage && <button
-        type="button"
-        onClick={() => setLanguage(language === 'en' ? 'fa' : 'en')}
-        aria-label={t(language === 'en' ? 'Switch to Persian' : 'Switch to English')}
-        title={t(language === 'en' ? 'Switch to Persian' : 'Switch to English')}
-        data-testid="button-language-toggle"
-        className="rounded-lg border border-[#dce1eb] bg-white px-2.5 py-2 text-xs font-semibold text-[#4c5dd4] transition hover:bg-[#f4f5ff]"
-      >{language === 'en' ? 'فارسی' : 'English'}</button>}
+      {showLanguage && <LanguageToggle />}
     </div>
   );
 }
 
+function LanguageToggle() {
+  const { language, setLanguage } = useLanguage();
+  const t = useT();
+  return <button
+    type="button"
+    onClick={() => setLanguage(language === 'en' ? 'fa' : 'en')}
+    aria-label={t(language === 'en' ? 'Switch to Persian' : 'Switch to English')}
+    title={t(language === 'en' ? 'Switch to Persian' : 'Switch to English')}
+    data-testid="button-language-toggle"
+    className="rounded-lg border border-[#dce1eb] bg-white px-2.5 py-2 text-xs font-semibold text-[#4c5dd4] transition hover:bg-[#f4f5ff]"
+  >{language === 'en' ? 'فارسی' : 'English'}</button>;
+}
 function Button({
   children, variant = 'primary', className = '', type = 'button', disabled, onClick, testId,
 }: {
@@ -131,7 +134,7 @@ function InlineError({ message, onRetry }: { message: string; onRetry?: () => vo
 
 function PageLoader({ label = 'Loading your queue' }: { label?: string }) {
   const t = useT();
-  return <main className="app-shell grid place-items-center p-6" aria-label={label}>
+  return <main className="app-shell grid place-items-center p-6" aria-label={t(label)}>
     <div className="w-full max-w-sm space-y-4">
       <div className="h-3 w-28 animate-pulse rounded bg-[#e5e9f1]" />
       <div className="h-28 animate-pulse rounded-2xl bg-[#e5e9f1]" />
@@ -161,7 +164,7 @@ function Landing() {
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#dce1ef] bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-[#5a6680]">
               <span className="size-1.5 rounded-full bg-[#4c5dd4]" /> {t('A calmer way to run the line')}
             </div>
-            <h1 className="max-w-[650px] font-['Manrope'] text-[clamp(42px,7vw,76px)] font-extrabold leading-[1.04] tracking-[-.075em] text-[#202a40]">
+            <h1 className="max-w-[650px] font-display text-[clamp(42px,7vw,76px)] font-extrabold leading-[1.04] tracking-[-.075em] text-[#202a40]">
               {t('Good service.')}<br /><span className="text-[#4c5dd4]">{t('No waiting room.')}</span>
             </h1>
             <p className="mt-6 max-w-[460px] text-[16px] leading-7 text-[#667187]">
@@ -313,9 +316,9 @@ function CreateBusiness() {
             <Field label="Queue capacity" hint="people" type="number" min={1} max={500} value={form.maxActiveCapacity} onChange={(e) => update('maxActiveCapacity', e.target.value)} required data-testid="input-queue-capacity" />
           </div>
           <div className="rounded-xl bg-[#f5f6fa] p-4">
-            <Field label="Owner access code" hint="6–128 characters" type="password" minLength={6} maxLength={128} autoComplete="new-password" placeholder="Choose a private access code" value={form.accessCode} onChange={(e) => update('accessCode', e.target.value)} required data-testid="input-access-code" />
-            <div className="mt-4"><Field label="Confirm access code" type="password" minLength={6} maxLength={128} autoComplete="new-password" placeholder="Enter the same code again" value={form.confirmAccessCode} onChange={(e) => update('confirmAccessCode', e.target.value)} required data-testid="input-confirm-access-code" /></div>
-            <p className="mt-2 text-[10px] leading-4 text-[#828b9b]">You'll use this to sign in to your owner dashboard. Keep it somewhere safe.</p>
+            <Field label="Owner access code" hint="6–128 characters" type="password" dir="ltr" minLength={6} maxLength={128} autoComplete="new-password" placeholder="Choose a private access code" value={form.accessCode} onChange={(e) => update('accessCode', e.target.value)} required data-testid="input-access-code" />
+            <div className="mt-4"><Field label="Confirm access code" type="password" dir="ltr" minLength={6} maxLength={128} autoComplete="new-password" placeholder="Enter the same code again" value={form.confirmAccessCode} onChange={(e) => update('confirmAccessCode', e.target.value)} required data-testid="input-confirm-access-code" /></div>
+            <p className="mt-2 text-[10px] leading-4 text-[#828b9b]">{t("You'll use this to sign in to your owner dashboard. Keep it somewhere safe.")}</p>
           </div>
           {error && <InlineError message={error} />}
           <Button type="submit" disabled={create.isPending} className="w-full !min-h-[48px]" testId="button-create-business">{create.isPending ? t('Setting up your queue…') : <>{t('Create queue')} <ArrowRight size={16} /></>}</Button>
@@ -351,7 +354,7 @@ function ManageEntry() {
     <main className="mx-auto grid max-w-[1040px] gap-10 px-5 pb-12 pt-8 sm:px-8 md:grid-cols-[.9fr_1.1fr] md:pt-14">
       <div><p className="eyebrow">{t('OWNER ACCESS')}</p><h1 className="mt-4 font-display text-[42px] font-extrabold leading-tight tracking-[-.07em] text-[#202a40]">{t('Pick up where your queue is.')}</h1><p className="mt-4 max-w-sm text-sm leading-6 text-[#737e91]">{t('Enter the business slug or the owner dashboard link you saved when setting up.')}</p></div>
       <form onSubmit={submit} className="surface mx-auto w-full max-w-[480px] p-6 sm:p-8">
-        <Field label="Business slug or dashboard link" placeholder="e.g. northside-studio-a1b2c3d4e5" value={businessPath} onChange={(event) => setBusinessPath(event.target.value)} required data-testid="input-business-slug" />
+        <Field label="Business slug or dashboard link" dir="ltr" placeholder="e.g. northside-studio-a1b2c3d4e5" value={businessPath} onChange={(event) => setBusinessPath(event.target.value)} required data-testid="input-business-slug" />
         {error && <div className="mt-4"><InlineError message={error} /></div>}
         <Button type="submit" className="mt-5 w-full !min-h-[47px]" testId="button-open-owner-dashboard">{t('Continue')} <ArrowRight size={15} /></Button>
       </form>
@@ -394,13 +397,13 @@ function BookingPage() {
   if (query.error || !query.data) return <PublicError message={errorText(query.error, 'We could not find that queue.')} onRetry={() => query.refetch()} />;
   if (savedTicket && ticketQuery.isLoading) return <PageLoader label="Finding your ticket" />;
   if (savedTicket && ticketQuery.data) return <CustomerTicketView ticket={ticketQuery.data} slug={slug} onForget={() => { localStorage.removeItem(ticketStoreKey(slug)); window.location.reload(); }} />;
-  if (savedTicket && ticketQuery.error) return <PublicError message="We couldn't load the saved ticket. Your private ticket access may have expired." onRetry={() => ticketQuery.refetch()} action={<Button variant="secondary" onClick={() => { localStorage.removeItem(ticketStoreKey(slug)); window.location.reload(); }} testId="button-reset-ticket">Start over</Button>} />;
+  if (savedTicket && ticketQuery.error) return <PublicError message="We couldn't load the saved ticket. Your private ticket access may have expired." onRetry={() => ticketQuery.refetch()} action={<Button variant="secondary" onClick={() => { localStorage.removeItem(ticketStoreKey(slug)); window.location.reload(); }} testId="button-reset-ticket">{t('Start over')}</Button>} />;
   return <div className="app-shell flex flex-col">
-    <header className="mx-auto flex w-full max-w-[1060px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><span className="inline-flex items-center gap-2 text-[11px] font-medium text-[#758096]"><ShieldCheck size={14} className="text-[#4c5dd4]" /> Private ticket</span></header>
+    <header className="mx-auto flex w-full max-w-[1060px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><span className="inline-flex items-center gap-2 text-[11px] font-medium text-[#758096]"><ShieldCheck size={14} className="text-[#4c5dd4]" /> {t('Private ticket')}</span></header>
     <main className="mx-auto grid w-full max-w-[1060px] flex-1 items-start gap-8 px-5 pb-12 pt-5 sm:px-8 md:grid-cols-[1fr_.82fr] md:gap-12 md:pt-12">
       <section className="fade-up">
         <p className="eyebrow">{business?.category ? t(business.category) : ''} · {t('VIRTUAL QUEUE')}</p>
-        <h1 className="mt-3 font-['Manrope'] text-[clamp(36px,6vw,56px)] font-extrabold leading-[1.05] tracking-[-.075em] text-[#202a40]" data-testid="text-business-name">{business?.name}</h1>
+        <h1 dir="auto" className="mt-3 font-display text-[clamp(36px,6vw,56px)] font-extrabold leading-[1.05] tracking-[-.075em] text-[#202a40]" data-testid="text-business-name">{business?.name}</h1>
         <p className="mt-4 max-w-md text-sm leading-6 text-[#737e91]">{t("Take your place in line from here. We'll keep your ticket updated while you get on with your day.")}</p>
         <div className="surface mt-8 grid grid-cols-2 divide-x divide-[#edf0f4] p-5 sm:p-6">
           <div className="pe-4"><p className="eyebrow">{t('People waiting')}</p><p className="mono mt-2 text-3xl text-[#29344d]" data-testid="text-waiting-count">{formatNumber(query.data.queue.waitingCount, language)}</p></div>
@@ -425,6 +428,8 @@ function BookingPage() {
 }
 
 function CustomerTicketView({ ticket, slug, onForget }: { ticket: CustomerTicket; slug: string; onForget: () => void }) {
+  const { language } = useLanguage();
+  const t = useT();
   const current = ticket.status;
   const statusDescription: Record<string, string> = {
     Waiting: 'You are in line. We’ll keep this page up to date.',
@@ -435,50 +440,54 @@ function CustomerTicketView({ ticket, slug, onForget }: { ticket: CustomerTicket
   };
   const statusClass = `status-${current.toLowerCase()}`;
   return <div className="app-shell flex flex-col">
-    <header className="mx-auto flex w-full max-w-[840px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><span className="flex items-center gap-1.5 text-[10px] text-[#7f899a]"><span className="size-1.5 animate-pulse rounded-full bg-[#4e9b79]" />LIVE TICKET</span></header>
+      <header className="mx-auto flex w-full max-w-[840px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><span className="flex items-center gap-1.5 text-[10px] text-[#7f899a]"><span className="size-1.5 animate-pulse rounded-full bg-[#4e9b79]" />{t('LIVE TICKET')}</span></header>
     <main className="mx-auto w-full max-w-[840px] flex-1 px-5 pb-12 pt-8 sm:px-8 sm:pt-14">
-      <p className="eyebrow">{ticket.businessName}</p>
-      <div className="mt-3 flex flex-wrap items-end justify-between gap-4"><div><h1 className="font-['Manrope'] text-3xl font-extrabold tracking-[-.065em] text-[#202a40] sm:text-[42px]">Your place is saved.</h1><p className="mt-2 text-sm text-[#737e91]">Hi {ticket.customerName}, here's the latest on your visit.</p></div><span className={`status-pill ${statusClass}`} data-testid="status-ticket"><span className="dot" />{current}</span></div>
+      <p className="eyebrow" dir="auto">{ticket.businessName}</p>
+      <div className="mt-3 flex flex-wrap items-end justify-between gap-4"><div><h1 className="font-display text-3xl font-extrabold tracking-[-.065em] text-[#202a40] sm:text-[42px]">{t('Your place is saved.')}</h1><p className="mt-2 text-sm text-[#737e91]">{language === 'fa' ? <>سلام {ticket.customerName}، {t("here's the latest on your visit.")}</> : <>Hi {ticket.customerName}, {t("here's the latest on your visit.")}</>}</p></div><span className={`status-pill ${statusClass}`} data-testid="status-ticket"><span className="dot" />{t(current)}</span></div>
       <div className="surface mt-8 overflow-hidden">
         <div className="grid gap-px bg-[#edf0f4] sm:grid-cols-[1.1fr_.9fr]">
-          <div className="bg-white p-6 sm:p-8"><p className="eyebrow">YOUR TICKET</p><p className="mono mt-3 text-[clamp(52px,12vw,88px)] font-medium leading-none tracking-[-.09em] text-[#4c5dd4]" data-testid="text-ticket-number">{ticket.ticketNumber}</p><p className="mt-5 max-w-sm text-xs leading-5 text-[#748095]" data-testid="text-ticket-message">{statusDescription[current] || statusDescription.Waiting}</p></div>
+          <div className="bg-white p-6 sm:p-8"><p className="eyebrow">{t('YOUR TICKET')}</p><p className="mono mt-3 text-[clamp(52px,12vw,88px)] font-medium leading-none tracking-[-.09em] text-[#4c5dd4]" data-testid="text-ticket-number">{ticket.ticketNumber}</p><p className="mt-5 max-w-sm text-xs leading-5 text-[#748095]" data-testid="text-ticket-message">{t(statusDescription[current] || statusDescription.Waiting)}</p></div>
           <div className="bg-white p-5 sm:p-6">
             {current === 'Completed' || current === 'Skipped' ? <div className={`flex h-full min-h-[150px] flex-col justify-center rounded-xl p-5 ${current === 'Completed' ? 'bg-[#edf7f1] text-[#357b5b]' : 'bg-[#fff3ef] text-[#a45045]'}`}>
-              <span className="flex items-center gap-2 text-xs font-bold">{current === 'Completed' ? <CheckCircle2 size={17} /> : <X size={17} />}{current === 'Completed' ? 'Visit complete' : 'Ticket skipped'}</span>
-              <p className="mt-2 text-[11px] leading-5 text-[#697487]">{statusDescription[current]}</p>
+              <span className="flex items-center gap-2 text-xs font-bold">{current === 'Completed' ? <CheckCircle2 size={17} /> : <X size={17} />}{t(current === 'Completed' ? 'Visit complete' : 'Ticket skipped')}</span>
+              <p className="mt-2 text-[11px] leading-5 text-[#697487]">{t(statusDescription[current])}</p>
             </div> : <div className="grid h-full grid-cols-2 gap-3">
-              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Ahead of you</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-customers-ahead">{ticket.customersAhead}</p><p className="text-[10px] text-[#8b94a4]">customers</p></div>
-              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Active queue</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-active-queue-size">{ticket.activeQueueSize}</p><p className="text-[10px] text-[#8b94a4]">tickets</p></div>
-              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Now serving</p><p className="mono mt-2 text-[25px] text-[#29344d]" data-testid="text-now-serving">{ticket.currentTicketNumber || '—'}</p><p className="text-[10px] text-[#8b94a4]">current ticket</p></div>
-              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">Estimated wait</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-estimated-wait">{ticket.estimatedWaitMinutes}<span className="ml-1 text-xs text-[#8b94a4]">min</span></p><p className="text-[10px] text-[#8b94a4]">estimate, may change</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">{t('Ahead of you')}</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-customers-ahead">{formatNumber(ticket.customersAhead, language)}</p><p className="text-[10px] text-[#8b94a4]">{t('customers')}</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">{t('Active queue')}</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-active-queue-size">{formatNumber(ticket.activeQueueSize, language)}</p><p className="text-[10px] text-[#8b94a4]">{t('tickets')}</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">{t('Now serving')}</p><p className="mono mt-2 text-[25px] text-[#29344d]" data-testid="text-now-serving">{ticket.currentTicketNumber || '—'}</p><p className="text-[10px] text-[#8b94a4]">{t('current ticket')}</p></div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4"><p className="eyebrow">{t('Estimated wait')}</p><p className="mono mt-2 text-[30px] text-[#29344d]" data-testid="text-estimated-wait">{formatNumber(ticket.estimatedWaitMinutes, language)}<span className="ms-1 text-xs text-[#8b94a4]">{t('min')}</span></p><p className="text-[10px] text-[#8b94a4]">{t('estimate, may change')}</p></div>
             </div>}
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#edf0f4] bg-[#fafbfc] px-5 py-4 sm:px-7">
-          <div className="flex items-center gap-2 text-[11px] text-[#7c8697]"><RefreshCw size={13} className="text-[#6474d8]" /> Updates automatically every few seconds</div>
-          <button onClick={onForget} className="text-[11px] font-semibold text-[#7c8697] underline decoration-[#cbd1dc] underline-offset-4 hover:text-[#39445b]" data-testid="button-clear-ticket">Clear this ticket</button>
+          <div className="flex items-center gap-2 text-[11px] text-[#7c8697]"><RefreshCw size={13} className="text-[#6474d8]" /> {t('Updates automatically every few seconds')}</div>
+          <button onClick={onForget} className="text-[11px] font-semibold text-[#7c8697] underline decoration-[#cbd1dc] underline-offset-4 hover:text-[#39445b]" data-testid="button-clear-ticket">{t('Clear this ticket')}</button>
         </div>
       </div>
-      {ticket.isPaused && current === 'Waiting' && <div className="mt-4 rounded-xl bg-[#fff5e5] p-4 text-xs text-[#87642d]" data-testid="status-queue-paused">The queue is paused. Your ticket is safe and will update when service resumes.</div>}
-      <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#e1e5ed] bg-white/70 p-4 text-[11px] leading-5 text-[#7a8495]"><ShieldCheck size={16} className="shrink-0 text-[#596bd6]" /> Your ticket is private. Only you can see this name and ticket status.</div>
+      {ticket.isPaused && current === 'Waiting' && <div className="mt-4 rounded-xl bg-[#fff5e5] p-4 text-xs text-[#87642d]" data-testid="status-queue-paused">{t('The queue is paused. Your ticket is safe and will update when service resumes.')}</div>}
+      <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#e1e5ed] bg-white/70 p-4 text-[11px] leading-5 text-[#7a8495]"><ShieldCheck size={16} className="shrink-0 text-[#596bd6]" /> {t('Your ticket is private. Only you can see this name and ticket status.')}</div>
     </main>
-    <footer className="mx-auto flex w-full max-w-[840px] justify-between px-5 py-5 text-[10px] text-[#8b94a4] sm:px-8"><span>QueueUp</span><Link href={`/q/${slug}`} className="hover:text-[#5364d3]" data-testid="link-queue-page">Queue details</Link></footer>
+    <footer className="mx-auto flex w-full max-w-[840px] justify-between px-5 py-5 text-[10px] text-[#8b94a4] sm:px-8"><span>QueueUp</span><Link href={`/q/${slug}`} className="hover:text-[#5364d3]" data-testid="link-queue-page">{t('Queue details')}</Link></footer>
   </div>;
 }
 
 function PublicError({ message, onRetry, action }: { message: string; onRetry: () => void; action?: ReactNode }) {
-  return <main className="app-shell grid place-items-center p-5">
+  const t = useT();
+  return <main className="app-shell relative grid place-items-center p-5">
+    <div className="absolute end-5 top-5"><LanguageToggle /></div>
     <section className="surface w-full max-w-md p-7 text-center">
       <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#fff0ee] text-[#b94b41]"><X size={20} /></span>
-      <h1 className="mt-4 text-xl font-bold tracking-[-.04em] text-[#29334a]">That page didn't load</h1>
-      <p className="mt-2 text-sm leading-6 text-[#788397]">{message}</p>
-      <div className="mt-5 flex justify-center gap-2"><Button variant="secondary" onClick={onRetry} testId="button-retry-page"><RefreshCw size={14} /> Try again</Button>{action}</div>
-      <Link href="/" className="mt-6 inline-block text-xs font-semibold text-[#5868d4]" data-testid="link-home-error">Back to QueueUp</Link>
+      <h1 className="mt-4 text-xl font-bold tracking-[-.04em] text-[#29334a]">{t("That page didn't load")}</h1>
+      <p className="mt-2 text-sm leading-6 text-[#788397]">{t(message)}</p>
+      <div className="mt-5 flex justify-center gap-2"><Button variant="secondary" onClick={onRetry} testId="button-retry-page"><RefreshCw size={14} /> {t('Try again')}</Button>{action}</div>
+      <Link href="/" className="mt-6 inline-block text-xs font-semibold text-[#5868d4]" data-testid="link-home-error">{t('Back to QueueUp')}</Link>
     </section>
   </main>;
 }
 
 function ManagePage() {
+  const { language } = useLanguage();
+  const t = useT();
   const { slug = '' } = useParams<{ slug: string }>();
   const query = useGetManagementDashboard(slug, { query: { queryKey: getGetManagementDashboardQueryKey(slug), refetchInterval: 3000 } });
   const queryClient = useQueryClient();
@@ -524,16 +533,16 @@ function ManagePage() {
   const dashboard = query.data;
   if (query.isLoading) return <PageLoader label="Opening owner dashboard" />;
   if (!dashboard) return <div className="app-shell">
-    <header className="mx-auto flex max-w-[1040px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#6d788c]" data-testid="link-manage-home">QueueUp home</Link></header>
+    <header className="mx-auto flex max-w-[1040px] items-center justify-between px-5 py-5 sm:px-8"><Brand /><Link href="/" className="text-xs font-semibold text-[#6d788c]" data-testid="link-manage-home">{t('QueueUp home')}</Link></header>
     <main className="mx-auto grid max-w-[1040px] gap-10 px-5 pb-12 pt-8 sm:px-8 md:grid-cols-[.9fr_1.1fr] md:pt-14">
-      <div><p className="eyebrow">OWNER ACCESS</p><h1 className="mt-4 font-['Manrope'] text-[42px] font-extrabold leading-tight tracking-[-.07em] text-[#202a40]">Your queue,<br />your rhythm.</h1><p className="mt-4 max-w-sm text-sm leading-6 text-[#737e91]">Sign in to call customers, update your queue, and keep the day moving.</p><div className="mt-8 flex items-center gap-3 rounded-xl bg-[#edf0ff] p-4 text-xs leading-5 text-[#64708d]"><LockKeyhole size={16} className="shrink-0 text-[#5567d4]" /> Your access code stays in this form only. QueueUp never stores it on this device.</div></div>
+      <div><p className="eyebrow">{t('OWNER ACCESS')}</p><h1 className="mt-4 font-display text-[42px] font-extrabold leading-tight tracking-[-.07em] text-[#202a40]">{t('Your queue,')}<br />{t('your rhythm.')}</h1><p className="mt-4 max-w-sm text-sm leading-6 text-[#737e91]">{t('Sign in to call customers, update your queue, and keep the day moving.')}</p><div className="mt-8 flex items-center gap-3 rounded-xl bg-[#edf0ff] p-4 text-xs leading-5 text-[#64708d]"><LockKeyhole size={16} className="shrink-0 text-[#5567d4]" /> {t('Your access code stays in this form only. QueueUp never stores it on this device.')}</div></div>
       <form onSubmit={signIn} className="surface mx-auto w-full max-w-[480px] p-6 sm:p-8">
         <div className="grid size-11 place-items-center rounded-xl bg-[#edf0ff] text-[#4c5dd4]"><LockKeyhole size={19} /></div>
-        <h2 className="mt-5 text-xl font-bold tracking-[-.04em] text-[#29344c]">Owner sign in</h2><p className="mt-1 text-xs text-[#7c8698]">Enter the access code you chose when you set up this business.</p>
-        <div className="mt-6 space-y-4"><Field label="Access code" type="password" minLength={6} maxLength={128} autoComplete="current-password" placeholder="Your owner access code" value={loginCode} onChange={(e) => setLoginCode(e.target.value)} required data-testid="input-owner-access-code" />
+        <h2 className="mt-5 text-xl font-bold tracking-[-.04em] text-[#29344c]">{t('Owner sign in')}</h2><p className="mt-1 text-xs text-[#7c8698]">{t('Enter the access code you chose when you set up this business.')}</p>
+        <div className="mt-6 space-y-4"><Field label="Access code" type="password" dir="ltr" minLength={6} maxLength={128} autoComplete="current-password" placeholder="Your owner access code" value={loginCode} onChange={(e) => setLoginCode(e.target.value)} required data-testid="input-owner-access-code" />
           {(loginError || (query.error && !loginError)) && <InlineError message={loginError || 'Sign in to access this owner dashboard.'} />}
-          <Button type="submit" disabled={login.isPending} className="w-full !min-h-[47px]" testId="button-owner-sign-in">{login.isPending ? 'Signing in…' : <>Open dashboard <ArrowRight size={15} /></>}</Button>
-          {query.error && <button type="button" className="w-full pt-1 text-[11px] font-semibold text-[#68748a] underline underline-offset-4" onClick={() => query.refetch()} data-testid="button-retry-dashboard">Check sign-in again</button>}
+          <Button type="submit" disabled={login.isPending} className="w-full !min-h-[47px]" testId="button-owner-sign-in">{login.isPending ? t('Signing in…') : <>{t('Open dashboard')} <ArrowRight size={15} /></>}</Button>
+          {query.error && <button type="button" className="w-full pt-1 text-[11px] font-semibold text-[#68748a] underline underline-offset-4" onClick={() => query.refetch()} data-testid="button-retry-dashboard">{t('Check sign-in again')}</button>}
         </div>
       </form>
     </main>
@@ -546,7 +555,7 @@ function ManagePage() {
   const allBusy = isLoading || logout.isPending;
   const handleLogout = () => logout.mutate({ slug }, { onSuccess: async () => { queryClient.removeQueries({ queryKey: getGetManagementDashboardQueryKey(slug) }); query.refetch(); } });
   const ticketAction = (kind: 'start' | 'complete' | 'skip', ticketId: string) => {
-    if (kind === 'skip' && !window.confirm('Skip this ticket? The customer will leave the active queue.')) return;
+    if (kind === 'skip' && !window.confirm(t('Skip this ticket? The customer will leave the active queue.'))) return;
     return runAction(() => {
       if (kind === 'start') return start.mutateAsync({ slug, ticketId });
       if (kind === 'complete') return complete.mutateAsync({ slug, ticketId });
@@ -556,23 +565,23 @@ function ManagePage() {
   return <div className="app-shell">
     <header className="border-b border-[#dfe4ec] bg-white/80">
       <div className="mx-auto flex max-w-[1360px] items-center justify-between gap-3 px-4 py-4 sm:px-7">
-        <div className="flex min-w-0 items-center gap-3"><Brand compact /><span className="h-6 w-px bg-[#e2e6ee]" /><div className="min-w-0"><p className="truncate text-sm font-bold text-[#2c364d]" data-testid="text-manage-business">{dashboard.business.name}</p><p className="eyebrow !text-[9px]">{dashboard.business.category}</p></div></div>
+        <div className="flex min-w-0 items-center gap-3"><Brand compact /><span className="h-6 w-px bg-[#e2e6ee]" /><div className="min-w-0"><p className="truncate text-sm font-bold text-[#2c364d]" data-testid="text-manage-business">{dashboard.business.name}</p><p className="eyebrow !text-[9px]">{t(dashboard.business.category)}</p></div></div>
         <div className="flex items-center gap-2">
-          <Link href={`/q/${slug}`} target="_blank" className="btn btn-secondary !min-h-[38px] !px-3 !text-[11px]" data-testid="link-public-booking"><ExternalLink size={14} /><span className="hidden sm:inline">Booking page</span></Link>
-          <Link href={`/display/${slug}`} target="_blank" className="btn btn-secondary !min-h-[38px] !px-3 !text-[11px]" data-testid="link-public-display"><Monitor size={14} /><span className="hidden sm:inline">TV display</span></Link>
-          <button onClick={handleLogout} className="grid size-9 place-items-center rounded-lg text-[#7c8698] transition hover:bg-[#f2f4f8] hover:text-[#3a465e]" aria-label="Sign out" title="Sign out" data-testid="button-owner-sign-out"><LogOut size={17} /></button>
+          <Link href={`/q/${slug}`} target="_blank" className="btn btn-secondary !min-h-[38px] !px-3 !text-[11px]" data-testid="link-public-booking"><ExternalLink size={14} /><span className="hidden sm:inline">{t('Booking page')}</span></Link>
+          <Link href={`/display/${slug}`} target="_blank" className="btn btn-secondary !min-h-[38px] !px-3 !text-[11px]" data-testid="link-public-display"><Monitor size={14} /><span className="hidden sm:inline">{t('TV display')}</span></Link>
+          <button onClick={handleLogout} className="grid size-9 place-items-center rounded-lg text-[#7c8698] transition hover:bg-[#f2f4f8] hover:text-[#3a465e]" aria-label={t('Sign out')} title={t('Sign out')} data-testid="button-owner-sign-out"><LogOut size={17} /></button>
         </div>
       </div>
     </header>
     <main className="mx-auto max-w-[1360px] px-4 pb-12 pt-7 sm:px-7 sm:pt-9">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-        <div><p className="eyebrow">OWNER DASHBOARD · LIVE</p><h1 className="mt-2 font-['Manrope'] text-[30px] font-extrabold tracking-[-.065em] text-[#222d44] sm:text-[36px]">Good day, let's keep it moving.</h1><p className="mt-1 text-xs text-[#838d9f]">Your queue refreshes automatically every few seconds.</p></div>
-        <div className="flex items-center gap-2"><span className={`status-pill ${dashboard.business.isPaused ? 'status-called' : 'status-serving'}`} data-testid="status-queue-state"><span className="dot" />{dashboard.business.isPaused ? 'Bookings paused' : 'Taking customers'}</span><Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => updateQueue.mutateAsync({ slug, data: { isPaused: !dashboard.business.isPaused } }), dashboard.business.isPaused ? 'Bookings have resumed.' : 'New bookings are paused.')} testId="button-pause-resume">{dashboard.business.isPaused ? <><Play size={14} /> Resume queue</> : <><Pause size={14} /> Pause queue</>}</Button></div>
+        <div><p className="eyebrow">{t('OWNER DASHBOARD · LIVE')}</p><h1 className="mt-2 font-display text-[30px] font-extrabold tracking-[-.065em] text-[#222d44] sm:text-[36px]">{t("Good day, let's keep it moving.")}</h1><p className="mt-1 text-xs text-[#838d9f]">{t('Your queue refreshes automatically every few seconds.')}</p></div>
+        <div className="flex items-center gap-2"><span className={`status-pill ${dashboard.business.isPaused ? 'status-called' : 'status-serving'}`} data-testid="status-queue-state"><span className="dot" />{t(dashboard.business.isPaused ? 'Bookings paused' : 'Taking customers')}</span><Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => updateQueue.mutateAsync({ slug, data: { isPaused: !dashboard.business.isPaused } }), dashboard.business.isPaused ? 'Bookings have resumed.' : 'New bookings are paused.')} testId="button-pause-resume">{dashboard.business.isPaused ? <><Play size={14} /> {t('Resume queue')}</> : <><Pause size={14} /> {t('Pause queue')}</>}</Button></div>
       </div>
       {showCreated && <section className="surface mb-6 p-5 sm:p-6" aria-live="polite" data-testid="status-business-created">
         <div className="flex items-start justify-between gap-4">
-          <div><p className="eyebrow">YOUR QUEUE IS READY</p><h2 className="mt-2 text-lg font-bold tracking-[-.04em] text-[#29334a]">{dashboard.business.name}</h2><p className="mt-1 text-xs leading-5 text-[#788397]">Save these links to share the queue and return to your owner dashboard.</p></div>
-          <button onClick={() => { setShowCreated(false); window.history.replaceState({}, '', window.location.pathname); }} className="grid size-8 shrink-0 place-items-center rounded-lg text-[#7c8698] hover:bg-[#f2f4f8]" aria-label="Dismiss setup confirmation"><X size={16} /></button>
+          <div><p className="eyebrow">{t('YOUR QUEUE IS READY')}</p><h2 className="mt-2 text-lg font-bold tracking-[-.04em] text-[#29334a]">{dashboard.business.name}</h2><p className="mt-1 text-xs leading-5 text-[#788397]">{t('Save these links to share the queue and return to your owner dashboard.')}</p></div>
+          <button onClick={() => { setShowCreated(false); window.history.replaceState({}, '', window.location.pathname); }} className="grid size-8 shrink-0 place-items-center rounded-lg text-[#7c8698] hover:bg-[#f2f4f8]" aria-label={t('Dismiss setup confirmation')}><X size={16} /></button>
         </div>
         <div className="mt-4 grid gap-2 lg:grid-cols-3">
           <CopyLinkRow title="Customer booking" href={`/q/${slug}`} detail="Public link for customers" />
@@ -581,42 +590,42 @@ function ManagePage() {
         </div>
       </section>}
       {actionError && <div className="mb-5"><InlineError message={actionError} onRetry={() => { setActionError(''); query.refetch(); }} /></div>}
-      {actionSuccess && <div className="mb-5 flex items-center gap-2 rounded-xl border border-[#cfe7d9] bg-[#f0f8f3] px-4 py-3 text-xs font-semibold text-[#357b5b]" role="status" data-testid="status-action-success"><CheckCircle2 size={15} />{actionSuccess}</div>}
+      {actionSuccess && <div className="mb-5 flex items-center gap-2 rounded-xl border border-[#cfe7d9] bg-[#f0f8f3] px-4 py-3 text-xs font-semibold text-[#357b5b]" role="status" data-testid="status-action-success"><CheckCircle2 size={15} />{t(actionSuccess)}</div>}
       <div className="mb-7 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Waiting" value={dashboard.stats.waitingCustomers} icon={<Users size={17} />} tint="indigo" detail="in the queue" />
-        <StatTile label="Being served" value={dashboard.stats.currentlyServing} icon={<Activity size={17} />} tint="green" detail="right now" />
-        <StatTile label="Completed tickets" value={dashboard.stats.completedTickets} icon={<CheckCircle2 size={17} />} tint="slate" detail="all time" />
-        <StatTile label="Average wait" value={`${dashboard.stats.averageWaitingMinutes}m`} icon={<Clock3 size={17} />} tint="amber" detail="recent customers" />
+        <StatTile label="Waiting" value={formatNumber(dashboard.stats.waitingCustomers, language)} icon={<Users size={17} />} tint="indigo" detail="in the queue" />
+        <StatTile label="Being served" value={formatNumber(dashboard.stats.currentlyServing, language)} icon={<Activity size={17} />} tint="green" detail="right now" />
+        <StatTile label="Completed tickets" value={formatNumber(dashboard.stats.completedTickets, language)} icon={<CheckCircle2 size={17} />} tint="slate" detail="all time" />
+        <StatTile label="Average wait" value={`${formatNumber(dashboard.stats.averageWaitingMinutes, language)} ${t('min')}`} icon={<Clock3 size={17} />} tint="amber" detail="recent customers" />
       </div>
       <div className="grid items-start gap-5 lg:grid-cols-[1.48fr_.82fr]">
         <section className="surface overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#edf0f4] px-5 py-4 sm:px-6">
-            <div><div className="flex items-center gap-2"><h2 className="text-sm font-bold text-[#303a50]">Your queue</h2><span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[.09em] text-[#7a8598]"><span className="size-1.5 animate-pulse rounded-full bg-[#45a27b]" /> Live</span></div><p className="mt-1 text-[10px] text-[#8992a1]">Tickets stay in order. Names are only visible here.</p></div>
-            <Button variant="quiet" className="!min-h-[34px] !px-2 !text-[11px]" onClick={() => query.refetch()} testId="button-refresh-queue"><RefreshCw size={13} /> Refresh</Button>
+            <div><div className="flex items-center gap-2"><h2 className="text-sm font-bold text-[#303a50]">{t('Your queue')}</h2><span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[.09em] text-[#7a8598]"><span className="size-1.5 animate-pulse rounded-full bg-[#45a27b]" /> {t('Live')}</span></div><p className="mt-1 text-[10px] text-[#8992a1]">{t('Tickets stay in order. Names are only visible here.')}</p></div>
+            <Button variant="quiet" className="!min-h-[34px] !px-2 !text-[11px]" onClick={() => query.refetch()} testId="button-refresh-queue"><RefreshCw size={13} /> {t('Refresh')}</Button>
           </div>
           {hasCurrent && currentTicket ? <div className="border-b border-[#edf0f4] bg-[#f6f7ff] px-5 py-5 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-4"><span className="grid size-14 place-items-center rounded-2xl bg-white font-['DM_Mono'] text-[17px] font-medium text-[#4c5dd4] shadow-sm">{currentTicket.ticketNumber}</span><div><p className="eyebrow !text-[#6673ba]">{activeStatus === 'Serving' ? 'NOW SERVING' : 'CALLED TO COUNTER'}</p><p className="mt-1 text-sm font-bold text-[#2c364f]">{currentTicket.customerName}</p></div></div>
-              <div className="flex flex-wrap gap-2">{activeStatus === 'Called' && <Button disabled={allBusy} onClick={() => ticketAction('start', currentTicket.id)} testId="button-start-service"><Play size={14} /> Start service</Button>}{activeStatus === 'Serving' && <Button disabled={allBusy} onClick={() => ticketAction('complete', currentTicket.id)} testId="button-complete-service"><Check size={14} /> Complete</Button>}<Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => recall.mutateAsync({ slug }), 'Current ticket recalled.')} testId="button-recall-customer"><BellRing size={14} /> Recall</Button><Button variant="danger" disabled={allBusy} onClick={() => ticketAction('skip', currentTicket.id)} testId="button-skip-current"><SkipForward size={14} /> Skip</Button></div>
+              <div className="flex items-center gap-4"><span className="grid size-14 place-items-center rounded-2xl bg-white font-['DM_Mono'] text-[17px] font-medium text-[#4c5dd4] shadow-sm">{currentTicket.ticketNumber}</span><div><p className="eyebrow !text-[#6673ba]">{t(activeStatus === 'Serving' ? 'NOW SERVING' : 'CALLED TO COUNTER')}</p><p className="mt-1 text-sm font-bold text-[#2c364f]">{currentTicket.customerName}</p></div></div>
+              <div className="flex flex-wrap gap-2">{activeStatus === 'Called' && <Button disabled={allBusy} onClick={() => ticketAction('start', currentTicket.id)} testId="button-start-service"><Play size={14} /> {t('Start service')}</Button>}{activeStatus === 'Serving' && <Button disabled={allBusy} onClick={() => ticketAction('complete', currentTicket.id)} testId="button-complete-service"><Check size={14} /> {t('Complete')}</Button>}<Button variant="secondary" disabled={allBusy} onClick={() => runAction(() => recall.mutateAsync({ slug }), 'Current ticket recalled.')} testId="button-recall-customer"><BellRing size={14} /> {t('Recall')}</Button><Button variant="danger" disabled={allBusy} onClick={() => ticketAction('skip', currentTicket.id)} testId="button-skip-current"><SkipForward size={14} /> {t('Skip')}</Button></div>
             </div>
           </div> : <div className="flex items-center justify-between gap-4 border-b border-[#edf0f4] bg-[#f7f8fb] px-5 py-5 sm:px-6">
-            <div><p className="eyebrow">READY WHEN YOU ARE</p><p className="mt-1 text-sm font-semibold text-[#313c54]">{nextUp ? `${nextUp.customerName} is next` : 'No one is waiting right now'}</p><p className="mt-1 text-[10px] text-[#828c9e]">{nextUp ? `Ticket ${nextUp.ticketNumber} · joined ${formatTime(nextUp.createdAt)}` : 'Your queue is clear.'}</p></div>
-            <Button disabled={!nextUp || allBusy} onClick={() => runAction(() => callNext.mutateAsync({ slug }), 'Next customer called.')} className="shrink-0" testId="button-call-next"><ArrowRight size={15} /> Call next</Button>
+            <div><p className="eyebrow">{t('READY WHEN YOU ARE')}</p><p className="mt-1 text-sm font-semibold text-[#313c54]">{nextUp ? `${nextUp.customerName} ${t('is next')}` : t('No one is waiting right now')}</p><p className="mt-1 text-[10px] text-[#828c9e]">{nextUp ? <>{t('Ticket')} {nextUp.ticketNumber} · {t('joined at')} {formatTime(nextUp.createdAt, language)}</> : t('Your queue is clear.')}</p></div>
+            <Button disabled={!nextUp || allBusy} onClick={() => runAction(() => callNext.mutateAsync({ slug }), 'Next customer called.')} className="shrink-0" testId="button-call-next"><ArrowRight size={15} /> {t('Call next')}</Button>
           </div>}
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[590px] text-left">
-              <thead><tr className="border-b border-[#edf0f4] text-[9px] font-semibold uppercase tracking-[.1em] text-[#8791a2]"><th className="px-5 py-3 sm:px-6">Ticket</th><th className="px-3 py-3">Customer</th><th className="px-3 py-3">Joined</th><th className="px-3 py-3">Status</th><th className="px-5 py-3 text-right sm:px-6">Action</th></tr></thead>
-              <tbody>{dashboard.tickets.length === 0 ? <tr><td colSpan={5} className="px-6 py-14 text-center"><span className="mx-auto grid size-10 place-items-center rounded-xl bg-[#f0f2f7] text-[#7a85a0]"><Ticket size={18} /></span><p className="mt-3 text-xs font-semibold text-[#576278]">No tickets yet</p><p className="mt-1 text-[10px] text-[#929bab]">Share your booking link to welcome your first customer.</p></td></tr>
+            <table className="w-full min-w-[590px] text-start">
+              <thead><tr className="border-b border-[#edf0f4] text-[9px] font-semibold uppercase tracking-[.1em] text-[#8791a2]"><th className="px-5 py-3 sm:px-6">{t('Ticket')}</th><th className="px-3 py-3">{t('Customer')}</th><th className="px-3 py-3">{t('Joined')}</th><th className="px-3 py-3">{t('Status')}</th><th className="px-5 py-3 text-end sm:px-6">{t('Action')}</th></tr></thead>
+              <tbody>{dashboard.tickets.length === 0 ? <tr><td colSpan={5} className="px-6 py-14 text-center"><span className="mx-auto grid size-10 place-items-center rounded-xl bg-[#f0f2f7] text-[#7a85a0]"><Ticket size={18} /></span><p className="mt-3 text-xs font-semibold text-[#576278]">{t('No tickets yet')}</p><p className="mt-1 text-[10px] text-[#929bab]">{t('Share your booking link to welcome your first customer.')}</p></td></tr>
                 : dashboard.tickets.map((ticket) => <tr key={ticket.id} className="border-b border-[#f0f2f6] last:border-0 hover:bg-[#fafbfc]" data-testid={`row-ticket-${ticket.id}`}>
-                  <td className="px-5 py-3.5 sm:px-6"><span className="mono text-xs font-medium text-[#4453bd]">{ticket.ticketNumber}</span></td><td className="px-3 py-3.5"><span className="text-xs font-semibold text-[#38435a]">{ticket.customerName}</span></td><td className="px-3 py-3.5 text-[10px] text-[#828c9d]">{formatTime(ticket.createdAt)}</td><td className="px-3 py-3.5"><StatusBadge status={ticket.status} /></td><td className="px-5 py-3.5 text-right sm:px-6">{ticket.status === 'Waiting' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline disabled:cursor-not-allowed disabled:opacity-50" onClick={() => runAction(() => callNext.mutateAsync({ slug }), 'Next customer called.')} disabled={allBusy || hasCurrent} data-testid={`button-call-ticket-${ticket.id}`}>Call next</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>Skip</button></div> : ticket.status === 'Called' ? <button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('start', ticket.id)} disabled={allBusy} data-testid={`button-start-ticket-${ticket.id}`}>Start</button> : ticket.status === 'Serving' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('complete', ticket.id)} disabled={allBusy} data-testid={`button-complete-ticket-${ticket.id}`}>Complete</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>Skip</button></div> : <span className="text-[10px] text-[#a0a7b4]">—</span>}</td>
+                  <td className="px-5 py-3.5 sm:px-6"><span className="mono text-xs font-medium text-[#4453bd]">{ticket.ticketNumber}</span></td><td className="px-3 py-3.5"><span className="text-xs font-semibold text-[#38435a]">{ticket.customerName}</span></td><td className="px-3 py-3.5 text-[10px] text-[#828c9d]">{formatTime(ticket.createdAt, language)}</td><td className="px-3 py-3.5"><StatusBadge status={ticket.status} /></td><td className="px-5 py-3.5 text-end sm:px-6">{ticket.status === 'Waiting' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline disabled:cursor-not-allowed disabled:opacity-50" onClick={() => runAction(() => callNext.mutateAsync({ slug }), 'Next customer called.')} disabled={allBusy || hasCurrent} data-testid={`button-call-ticket-${ticket.id}`}>{t('Call next')}</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>{t('Skip')}</button></div> : ticket.status === 'Called' ? <button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('start', ticket.id)} disabled={allBusy} data-testid={`button-start-ticket-${ticket.id}`}>{t('Start')}</button> : ticket.status === 'Serving' ? <div className="flex justify-end gap-3"><button className="text-[10px] font-semibold text-[#4c5dd4] hover:underline" onClick={() => ticketAction('complete', ticket.id)} disabled={allBusy} data-testid={`button-complete-ticket-${ticket.id}`}>{t('Complete')}</button><button className="text-[10px] font-semibold text-[#b94b41] hover:underline" onClick={() => ticketAction('skip', ticket.id)} disabled={allBusy} data-testid={`button-skip-ticket-${ticket.id}`}>{t('Skip')}</button></div> : <span className="text-[10px] text-[#a0a7b4]">—</span>}</td>
                 </tr>)}</tbody>
             </table>
           </div>
-          {dashboard.tickets.length > 0 && <div className="flex items-center justify-between border-t border-[#edf0f4] bg-[#fafbfc] px-5 py-3 text-[10px] text-[#8992a1] sm:px-6"><span>{dashboard.tickets.length} recent {dashboard.tickets.length === 1 ? 'ticket' : 'tickets'}</span><span>Refreshes every 3 seconds</span></div>}
+          {dashboard.tickets.length > 0 && <div className="flex items-center justify-between border-t border-[#edf0f4] bg-[#fafbfc] px-5 py-3 text-[10px] text-[#8992a1] sm:px-6"><span>{formatNumber(dashboard.tickets.length, language)} {t('recent tickets')}</span><span>{t('Refreshes every 3 seconds')}</span></div>}
         </section>
         <aside className="space-y-5">
           <section className="surface p-5 sm:p-6">
-            <div className="flex items-start justify-between gap-3"><div><p className="eyebrow">QUICK LINKS</p><h2 className="mt-1 text-sm font-bold text-[#303a50]">Share the right screen</h2></div><Sparkles size={17} className="text-[#6474d8]" /></div>
+            <div className="flex items-start justify-between gap-3"><div><p className="eyebrow">{t('QUICK LINKS')}</p><h2 className="mt-1 text-sm font-bold text-[#303a50]">{t('Share the right screen')}</h2></div><Sparkles size={17} className="text-[#6474d8]" /></div>
             <div className="mt-4 space-y-2">
               <CopyLinkRow title="Customer booking" href={`/q/${slug}`} detail="Let customers reserve a spot" />
               <CopyLinkRow title="Owner dashboard" href={`/manage/${slug}`} detail="Private business management link" />
@@ -624,11 +633,11 @@ function ManagePage() {
             </div>
           </section>
           <section className="surface overflow-hidden">
-            <button onClick={() => setShowSettings((value) => !value)} className="flex w-full items-center justify-between p-5 text-left sm:p-6" aria-expanded={showSettings} data-testid="button-toggle-settings"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-[#f0f2f7] text-[#5d6880]"><Settings2 size={17} /></span><div><p className="text-sm font-bold text-[#303a50]">Queue settings</p><p className="mt-1 text-[10px] text-[#8992a1]">Business details and service pace</p></div></div><ChevronRight size={17} className={`text-[#8b94a3] transition-transform ${showSettings ? 'rotate-90' : ''}`} /></button>
+            <button onClick={() => setShowSettings((value) => !value)} className="flex w-full items-center justify-between p-5 text-start sm:p-6" aria-expanded={showSettings} data-testid="button-toggle-settings"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-[#f0f2f7] text-[#5d6880]"><Settings2 size={17} /></span><div><p className="text-sm font-bold text-[#303a50]">{t('Queue settings')}</p><p className="mt-1 text-[10px] text-[#8992a1]">{t('Business details and service pace')}</p></div></div><ChevronRight size={17} className={`text-[#8b94a3] transition-transform ${showSettings ? 'rotate-90' : ''}`} /></button>
             {showSettings && <SettingsForm dashboard={dashboard} pending={updateBusiness.isPending} onSave={(data) => runAction(() => updateBusiness.mutateAsync({ slug, data }), 'Business settings saved.')} />}
           </section>
           <div className="rounded-xl border border-[#e0e5ed] bg-[#f8f9fb] p-4">
-            <p className="eyebrow">QUEUE STATUS</p><div className="mt-3 flex items-center justify-between"><span className="text-xs font-semibold text-[#536078]">Customer reservations</span><span className={`text-[10px] font-bold ${dashboard.business.isPaused ? 'text-[#9a6a20]' : 'text-[#378464]'}`}>{dashboard.business.isPaused ? 'Paused' : 'Open'}</span></div><p className="mt-2 text-[10px] leading-4 text-[#858fa0]">{dashboard.business.isPaused ? 'Existing tickets remain active. Resume whenever you are ready.' : `Up to ${dashboard.business.maxActiveCapacity} people can join the queue.`}</p>
+            <p className="eyebrow">{t('QUEUE STATUS')}</p><div className="mt-3 flex items-center justify-between"><span className="text-xs font-semibold text-[#536078]">{t('Customer reservations')}</span><span className={`text-[10px] font-bold ${dashboard.business.isPaused ? 'text-[#9a6a20]' : 'text-[#378464]'}`}>{t(dashboard.business.isPaused ? 'Paused' : 'Open')}</span></div><p className="mt-2 text-[10px] leading-4 text-[#858fa0]">{dashboard.business.isPaused ? t('Existing tickets remain active. Resume whenever you are ready.') : <>{t('Up to')} {formatNumber(dashboard.business.maxActiveCapacity, language)} {t('people can join the queue.')}</>}</p>
           </div>
         </aside>
       </div>
@@ -637,15 +646,18 @@ function ManagePage() {
 }
 
 function StatTile({ label, value, icon, tint, detail }: { label: string; value: string | number; icon: ReactNode; tint: string; detail: string }) {
+  const t = useT();
   const colors: Record<string, string> = { indigo: 'bg-[#eef0ff] text-[#5869d7]', green: 'bg-[#e8f5ef] text-[#3d8a6b]', slate: 'bg-[#edf0f4] text-[#657187]', amber: 'bg-[#fff4e2] text-[#a4752e]' };
-  return <div className="surface p-4 sm:p-5"><div className="flex items-center justify-between gap-2"><p className="text-[10px] font-semibold text-[#7c8698] sm:text-[11px]">{label}</p><span className={`grid size-8 place-items-center rounded-lg ${colors[tint]}`}>{icon}</span></div><div className="mt-3 flex items-baseline gap-2"><p className="mono text-[27px] leading-none text-[#28334c]" data-testid={`text-stat-${label.toLowerCase().replaceAll(' ', '-')}`}>{value}</p><span className="hidden text-[9px] text-[#949cab] sm:block">{detail}</span></div></div>;
+  return <div className="surface p-4 sm:p-5"><div className="flex items-center justify-between gap-2"><p className="text-[10px] font-semibold text-[#7c8698] sm:text-[11px]">{t(label)}</p><span className={`grid size-8 place-items-center rounded-lg ${colors[tint]}`}>{icon}</span></div><div className="mt-3 flex items-baseline gap-2"><p className="mono text-[27px] leading-none text-[#28334c]" data-testid={`text-stat-${label.toLowerCase().replaceAll(' ', '-')}`}>{value}</p><span className="hidden text-[9px] text-[#949cab] sm:block">{t(detail)}</span></div></div>;
 }
 
 function StatusBadge({ status }: { status: string }) {
-  return <span className={`status-pill status-${status.toLowerCase()} !px-2 !py-1 !text-[9px]`} data-testid={`status-ticket-${status.toLowerCase()}`}><span className="dot !size-1.5" />{status}</span>;
+  const t = useT();
+  return <span className={`status-pill status-${status.toLowerCase()} !px-2 !py-1 !text-[9px]`} data-testid={`status-ticket-${status.toLowerCase()}`}><span className="dot !size-1.5" />{t(status)}</span>;
 }
 
 function CopyLinkRow({ title, href, detail }: { title: string; href: string; detail: string }) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     const fullUrl = `${window.location.origin}${href}`;
@@ -653,8 +665,8 @@ function CopyLinkRow({ title, href, detail }: { title: string; href: string; det
     catch { window.open(fullUrl, '_blank', 'noopener,noreferrer'); }
   };
   return <div className="flex items-center justify-between gap-3 rounded-xl border border-[#e8ebf1] p-3">
-    <div className="min-w-0"><p className="text-[11px] font-semibold text-[#38435a]">{title}</p><p className="mt-0.5 truncate text-[9px] text-[#8a94a4]">{detail}</p><p className="mono mt-1 truncate text-[9px] text-[#5a6680]">{window.location.origin}{href}</p></div>
-    <div className="flex shrink-0 items-center gap-1.5"><Link href={href} target="_blank" className="grid size-8 place-items-center rounded-lg text-[#758096] hover:bg-[#f2f4f8]" aria-label={`Open ${title}`} data-testid={`link-open-${title.toLowerCase().replaceAll(' ', '-')}`}><ExternalLink size={14} /></Link><button onClick={copy} className="btn btn-secondary !min-h-[32px] !px-2.5 !text-[10px]" data-testid={`button-copy-${title.toLowerCase().replaceAll(' ', '-')}`}>{copied ? <><Check size={12} /> Copied</> : 'Copy link'}</button></div>
+    <div className="min-w-0"><p className="text-[11px] font-semibold text-[#38435a]">{t(title)}</p><p className="mt-0.5 truncate text-[9px] text-[#8a94a4]">{t(detail)}</p><p className="mono mt-1 truncate text-[9px] text-[#5a6680]" dir="ltr">{window.location.origin}{href}</p></div>
+    <div className="flex shrink-0 items-center gap-1.5"><Link href={href} target="_blank" className="grid size-8 place-items-center rounded-lg text-[#758096] hover:bg-[#f2f4f8]" aria-label={`${t('Open link')} ${t(title)}`} data-testid={`link-open-${title.toLowerCase().replaceAll(' ', '-')}`}><ExternalLink size={14} /></Link><button onClick={copy} className="btn btn-secondary !min-h-[32px] !px-2.5 !text-[10px]" data-testid={`button-copy-${title.toLowerCase().replaceAll(' ', '-')}`}>{copied ? <><Check size={12} /> {t('Copied')}</> : t('Copy link')}</button></div>
   </div>;
 }
 
@@ -663,6 +675,7 @@ function SettingsForm({ dashboard, pending, onSave }: {
   pending: boolean;
   onSave: (data: { name: string; category: typeof BusinessCategory[keyof typeof BusinessCategory]; averageServiceMinutes: number; maxActiveCapacity: number }) => void;
 }) {
+  const t = useT();
   const [name, setName] = useState(dashboard.business.name);
   const [category, setCategory] = useState(dashboard.business.category);
   const [minutes, setMinutes] = useState(String(dashboard.business.averageServiceMinutes));
@@ -673,19 +686,21 @@ function SettingsForm({ dashboard, pending, onSave }: {
   };
   return <form onSubmit={submit} className="space-y-4 border-t border-[#edf0f4] px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
     <Field label="Business name" value={name} onChange={(e) => setName(e.target.value)} minLength={2} maxLength={100} required data-testid="input-setting-name" />
-    <SelectField label="Category" value={category} onChange={(e) => setCategory(e.target.value as typeof category)} data-testid="select-setting-category">{categoryOptions.map((item) => <option key={item} value={item}>{item}</option>)}</SelectField>
+    <SelectField label="Category" value={category} onChange={(e) => setCategory(e.target.value as typeof category)} data-testid="select-setting-category">{categoryOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}</SelectField>
     <div className="grid grid-cols-2 gap-3"><Field label="Minutes per service" type="number" min={1} max={240} value={minutes} onChange={(e) => setMinutes(e.target.value)} required data-testid="input-setting-minutes" /><Field label="Queue capacity" type="number" min={1} max={500} value={capacity} onChange={(e) => setCapacity(e.target.value)} required data-testid="input-setting-capacity" /></div>
-    <Button type="submit" disabled={pending} className="w-full !min-h-[42px]" testId="button-save-settings">{pending ? 'Saving changes…' : 'Save settings'}</Button>
+    <Button type="submit" disabled={pending} className="w-full !min-h-[42px]" testId="button-save-settings">{pending ? t('Saving changes…') : t('Save settings')}</Button>
   </form>;
 }
 
-function formatTime(value: string) {
+function formatTime(value: string, language: Language) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
-  return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
+  return new Intl.DateTimeFormat(language === 'fa' ? 'fa-IR-u-ca-persian' : 'en-US', { hour: 'numeric', minute: '2-digit' }).format(date);
 }
 
 function DisplayPage() {
+  const { language } = useLanguage();
+  const t = useT();
   const { slug = '' } = useParams<{ slug: string }>();
   const query = useGetQueueDisplay(slug, { query: { queryKey: getGetQueueDisplayQueryKey(slug), refetchInterval: 3000 } });
   const display = query.data;
@@ -693,22 +708,22 @@ function DisplayPage() {
   if (query.error || !display) return <PublicError message={errorText(query.error, 'We could not connect to this queue display.')} onRetry={() => query.refetch()} />;
   return <main className="app-shell flex min-h-[100dvh] flex-col bg-[#202b46] text-white">
     <header className="flex items-center justify-between px-5 py-5 sm:px-10 sm:py-7">
-      <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-white/10 text-[#b7c0ff]"><Activity size={21} /></span><div><p className="font-['Manrope'] text-sm font-bold tracking-[-.04em] text-white sm:text-base" data-testid="text-display-business">{display.businessName}</p><p className="eyebrow !text-[9px] !text-[#a4aec5]">LIVE QUEUE DISPLAY</p></div></div>
-      <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/[.06] px-3 py-2 text-[9px] font-semibold tracking-[.1em] text-[#c0c9dc]"><span className="size-1.5 animate-pulse rounded-full bg-[#7dd5ac]" /> LIVE</div>
+      <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-white/10 text-[#b7c0ff]"><Activity size={21} /></span><div><p className="font-display text-sm font-bold tracking-[-.04em] text-white sm:text-base" data-testid="text-display-business">{display.businessName}</p><p className="eyebrow !text-[9px] !text-[#a4aec5]">{t('LIVE QUEUE DISPLAY')}</p></div></div>
+      <div className="flex items-center gap-2"><LanguageToggle /><div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/[.06] px-3 py-2 text-[9px] font-semibold tracking-[.1em] text-[#c0c9dc]"><span className="size-1.5 animate-pulse rounded-full bg-[#7dd5ac]" /> {t('LIVE')}</div></div>
     </header>
     <section className="soft-grid flex flex-1 flex-col justify-center px-5 pb-10 sm:px-10">
       <div className="mx-auto w-full max-w-[1300px]">
-        {display.isPaused && <div className="mx-auto mb-8 flex max-w-fit items-center gap-2 rounded-full border border-[#9b7942]/40 bg-[#564a35]/50 px-4 py-2 text-xs font-medium text-[#f0d7a4]" data-testid="status-display-paused"><Pause size={14} /> Queue paused</div>}
+        {display.isPaused && <div className="mx-auto mb-8 flex max-w-fit items-center gap-2 rounded-full border border-[#9b7942]/40 bg-[#564a35]/50 px-4 py-2 text-xs font-medium text-[#f0d7a4]" data-testid="status-display-paused"><Pause size={14} /> {t('Queue paused')}</div>}
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_.9fr]">
-          <div className="text-center lg:text-left"><p className="eyebrow !text-[#a6b1ca]">NOW SERVING</p><p className="mono mt-5 text-[clamp(100px,24vw,260px)] font-medium leading-[.88] tracking-[-.11em] text-white" data-testid="text-current-ticket">{display.currentTicketNumber || '—'}</p><div className="mt-8 flex items-center justify-center gap-3 text-[#a9b3c8] lg:justify-start"><span className="size-2 rounded-full bg-[#7dd5ac]" /><span className="text-sm">Please come to the counter</span></div></div>
+          <div className="text-center lg:text-start"><p className="eyebrow !text-[#a6b1ca]">{t('NOW SERVING')}</p><p className="mono mt-5 text-[clamp(100px,24vw,260px)] font-medium leading-[.88] tracking-[-.11em] text-white" data-testid="text-current-ticket">{display.currentTicketNumber || '—'}</p><div className="mt-8 flex items-center justify-center gap-3 text-[#a9b3c8] lg:justify-start"><span className="size-2 rounded-full bg-[#7dd5ac]" /><span className="text-sm">{t('Please come to the counter')}</span></div></div>
           <div className="mx-auto w-full max-w-[490px]">
-            <div className="flex items-end justify-between border-b border-white/15 pb-3"><div><p className="eyebrow !text-[#a6b1ca]">UP NEXT</p><h2 className="mt-2 font-['Manrope'] text-2xl font-bold tracking-[-.05em] text-white sm:text-3xl">Please be ready</h2></div><div className="flex items-center gap-2 text-xs text-[#b2bdd2]"><Users size={15} />{display.waitingCount} waiting</div></div>
+            <div className="flex items-end justify-between border-b border-white/15 pb-3"><div><p className="eyebrow !text-[#a6b1ca]">{t('UP NEXT')}</p><h2 className="mt-2 font-display text-2xl font-bold tracking-[-.05em] text-white sm:text-3xl">{t('Please be ready')}</h2></div><div className="flex items-center gap-2 text-xs text-[#b2bdd2]"><Users size={15} />{formatNumber(display.waitingCount, language)} {t('waiting')}</div></div>
             {display.nextTicketNumbers.length ? <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {display.nextTicketNumbers.map((number, index) => <div key={`${number}-${index}`} className={`rounded-2xl border p-5 text-center ${index === 0 ? 'border-[#8995ec]/45 bg-[#4d5c9b]/45' : 'border-white/10 bg-white/[.055]'}`} data-testid={`card-next-ticket-${index}`}><p className="eyebrow !text-[#a6b1ca]">{index === 0 ? 'NEXT' : `AFTER ${index}`}</p><p className={`mono mt-3 text-[clamp(28px,5vw,45px)] font-medium tracking-[-.07em] ${index === 0 ? 'text-[#dce0ff]' : 'text-[#e7eaf1]'}`} data-testid={`text-next-ticket-${index}`}>{number}</p></div>)}
-            </div> : <div className="mt-5 rounded-2xl border border-dashed border-white/15 px-5 py-10 text-center"><p className="text-sm font-medium text-[#d0d6e2]">No one is waiting</p><p className="mt-1 text-xs text-[#929db3]">The next ticket will appear here.</p></div>}
+              {display.nextTicketNumbers.map((number, index) => <div key={`${number}-${index}`} className={`rounded-2xl border p-5 text-center ${index === 0 ? 'border-[#8995ec]/45 bg-[#4d5c9b]/45' : 'border-white/10 bg-white/[.055]'}`} data-testid={`card-next-ticket-${index}`}><p className="eyebrow !text-[#a6b1ca]">{index === 0 ? t('NEXT') : `${t('AFTER')} ${formatNumber(index, language)}`}</p><p className={`mono mt-3 text-[clamp(28px,5vw,45px)] font-medium tracking-[-.07em] ${index === 0 ? 'text-[#dce0ff]' : 'text-[#e7eaf1]'}`} data-testid={`text-next-ticket-${index}`}>{number}</p></div>)}
+            </div> : <div className="mt-5 rounded-2xl border border-dashed border-white/15 px-5 py-10 text-center"><p className="text-sm font-medium text-[#d0d6e2]">{t('No one is waiting')}</p><p className="mt-1 text-xs text-[#929db3]">{t('The next ticket will appear here.')}</p></div>}
           </div>
         </div>
-        <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-4 text-[9px] text-[#96a1b8]"><span>QueueUp · Ticket numbers only</span><span className="flex items-center gap-1.5"><RefreshCw size={11} /> Updates automatically</span></div>
+        <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-4 text-[9px] text-[#96a1b8]"><span>{t('QueueUp · Ticket numbers only')}</span><span className="flex items-center gap-1.5"><RefreshCw size={11} /> {t('Updates automatically')}</span></div>
       </div>
     </section>
   </main>;
@@ -730,7 +745,7 @@ function Router() {
 }
 
 function App() {
-  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
+  return <LanguageProvider><QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider></LanguageProvider>;
 }
 
 export default App;
